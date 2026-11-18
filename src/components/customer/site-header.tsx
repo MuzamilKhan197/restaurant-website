@@ -16,9 +16,11 @@ import {
 } from '@/components/ui/dialog';
 import { site } from '@/lib/site';
 import { cn } from '@/lib/utils';
+import { useCart } from '@/features/orders/cart';
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const itemCount = useCart().reduce((total, item) => total + item.quantity, 0);
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -55,8 +57,20 @@ export function SiteHeader() {
               </Link>
             </Button>
             <Button asChild variant="ghost" size="icon">
-              <Link href="/cart" aria-label="Shopping bag">
-                <ShoppingBag />
+              <Link
+                href="/cart"
+                className="relative"
+                aria-label={`Shopping bag, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`}
+              >
+                <ShoppingBag aria-hidden="true" />
+                {itemCount > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute right-0 top-0 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-primary-foreground tabular-nums"
+                  >
+                    {itemCount}
+                  </span>
+                )}
               </Link>
             </Button>
             <Button asChild size="sm" className="hidden sm:inline-flex">
