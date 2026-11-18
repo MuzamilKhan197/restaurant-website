@@ -49,13 +49,17 @@ export async function revokeInvitation(_state: AuthState, form: FormData): Promi
 }
 export async function updateMember(_state: AuthState, form: FormData): Promise<AuthState> {
   const access = await requireStaff('staff.manage');
-  const parsed = memberSchema.safeParse(Object.fromEntries(form));
+  const parsed = memberSchema.safeParse({
+    ...Object.fromEntries(form),
+    extraRoles: form.getAll('extraRoles'),
+  });
   if (!parsed.success) return { error: 'Choose a valid role and account status.' };
   const client = await createClient();
-  const { error } = await client.rpc('manage_staff_member', {
+  const { error } = await client.rpc('set_staff_roles', {
     p_restaurant: access.restaurant_id,
     p_member: parsed.data.member,
     p_role: parsed.data.role,
+    p_extra_roles: parsed.data.extraRoles,
     p_status: parsed.data.status,
   });
   if (error)

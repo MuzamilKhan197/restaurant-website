@@ -30,6 +30,29 @@ const invite = async () =>
     ]),
   );
 let awaitedRole;
+test('additional roles combine permissions and are removed or suspended atomically', async () => {
+  const member = await scalar('select id from public.staff_memberships where restaurant_id=$1 and user_id=$2', [R, SUPPORT]);
+  const primary = await role('support-agent');
+  const developer = await role('developer');
+  const ownerRole = await role('owner');
+  const setRoles = (actor, extras, status = 'active') => user(actor, () =>
+    query('select public.set_staff_roles($1,$2,$3,$4,$5)', [R, member, primary, extras, status]),
+  );
+  const access = () => user(SUPPORT, () => scalar('select public.current_staff_access($1)', [R]));
+  await assert.rejects(setRoles(SUPPORT, [developer]), /Owner access required/);
+  await assert.rejects(setRoles(OWNER, [ownerRole]), /Invalid additional staff roles/);
+  await assert.rejects(setRoles(OWNER, [await scalar("select id from public.roles where restaurant_id=$1 and slug='developer'",[R2])]), /Invalid additional staff roles/);
+  await setRoles(OWNER, [developer, developer]);
+  const combined = await access();
+  assert.ok(combined.permissions.includes('support.read'));
+  assert.ok(combined.permissions.includes('website.manage'));
+  assert.ok(!combined.permissions.includes('staff.manage'));
+  assert.equal(await scalar('select count(*)::int from public.staff_additional_roles where membership_id=$1',[member]),1);
+  await setRoles(OWNER,[developer],'suspended');
+  assert.equal(await access(),null);
+  await setRoles(OWNER,[]);
+  assert.ok(!(await access()).permissions.includes('website.manage'));
+});
 before(async () => {
   db = await createTestDatabase();
   await db.exec(await readFile(new URL('./helpers/fixtures.sql', import.meta.url), 'utf8'));

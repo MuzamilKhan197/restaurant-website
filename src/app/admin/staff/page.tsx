@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 export default async function StaffPage() {
   const access = await requireStaff('staff.read');
   const client = await createClient();
-  const [members, roles, permissions, grants, invitations] = await Promise.all([
+  const [members, roles, permissions, grants, invitations, assignments] = await Promise.all([
     client
       .from('staff_memberships')
       .select('id,user_id,display_name,contact_email,role_id,status')
@@ -39,8 +39,14 @@ export default async function StaffPage() {
           .order('created_at', { ascending: false })
           .limit(50)
       : Promise.resolve({ data: [], error: null }),
+    client
+      .from('staff_additional_roles')
+      .select('membership_id,role_id')
+      .eq('restaurant_id', access.restaurant_id),
   ]);
-  if ([members, roles, permissions, grants, invitations].some((result) => result.error))
+  if (
+    [members, roles, permissions, grants, invitations, assignments].some((result) => result.error)
+  )
     throw new Error('Unable to load team access. Please retry.');
   const staffRoles = (roles.data || []).filter(
     (role) => role.is_active && !['owner', 'customer'].includes(role.slug),
@@ -81,28 +87,43 @@ export default async function StaffPage() {
               operator.
             </p>
           )}
-          {members.data?.map((member) => (
-            <div key={member.id} className="py-5 first:pt-0">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-medium">{member.display_name || 'Team member'}</p>
-                  <p className="mt-1 break-all text-xs text-muted-foreground">
-                    {member.contact_email || 'No contact email'}
-                  </p>
+          {members.data?.map((member) => {
+            const extraRoles = (assignments.data || [])
+              .filter((a) => a.membership_id === member.id)
+              .map((a) => a.role_id);
+            return (
+              <div key={member.id} id={member.id} className="scroll-mt-20 py-5 first:pt-0">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium">{member.display_name || 'Team member'}</p>
+                    <p className="mt-1 break-all text-xs text-muted-foreground">
+                      {member.contact_email || 'No contact email'}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline">
+                      {roles.data?.find((r) => r.id === member.role_id)?.name || 'Role unavailable'}
+                    </Badge>
+                    {extraRoles.map((id) => (
+                      <Badge key={id} variant="outline">
+                        {roles.data?.find((role) => role.id === id)?.name || 'Role unavailable'}
+                      </Badge>
+                    ))}
+                    <Badge variant="outline">{member.status}</Badge>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Badge variant="outline">
-                    {roles.data?.find((r) => r.id === member.role_id)?.name || 'Role unavailable'}
-                  </Badge>
-                  <Badge variant="outline">{member.status}</Badge>
-                </div>
+                {access.is_owner &&
+                  roles.data?.find((r) => r.id === member.role_id)?.slug !== 'owner' && (
+                    <MemberForm
+                      key={JSON.stringify([member.role_id, member.status, extraRoles.sort()])}
+                      member={member}
+                      roles={staffRoles}
+                      extraRoles={extraRoles}
+                    />
+                  )}
               </div>
-              {access.is_owner &&
-                roles.data?.find((r) => r.id === member.role_id)?.slug !== 'owner' && (
-                  <MemberForm member={member} roles={staffRoles} />
-                )}
-            </div>
-          ))}
+            );
+          })}
         </CardContent>
       </Card>
       {access.is_owner && (

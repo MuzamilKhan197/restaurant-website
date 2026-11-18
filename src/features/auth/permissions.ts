@@ -12,6 +12,10 @@ export const modulePermissions: Record<string, string> = {
 export function visibleModule(slug: string, permissions: readonly string[]) {
   return (
     permissions.includes(modulePermissions[slug]) ||
+    (slug === 'people' &&
+      permissions.some(
+        (permission) => permission === 'staff.read' || permission === 'customers.read',
+      )) ||
     (slug === 'menu' && permissions.includes('menu.manage')) ||
     (slug === 'settings' && permissions.includes('settings.manage'))
   );

@@ -88,9 +88,11 @@ export function InvitationForm({ roles }: { roles: RoleChoice[] }) {
 export function MemberForm({
   member,
   roles,
+  extraRoles,
 }: {
   member: { id: string; role_id: string; status: string };
   roles: RoleChoice[];
+  extraRoles: string[];
 }) {
   const [state, action, pending] = useActionState(updateMember, {});
   return (
@@ -98,7 +100,7 @@ export function MemberForm({
       <input type="hidden" name="member" value={member.id} />
       <div className="flex flex-wrap gap-3">
         <select
-          aria-label="Staff role"
+          aria-label="Primary staff role"
           name="role"
           defaultValue={member.role_id}
           className={selectClass + ' sm:w-48'}
@@ -123,6 +125,22 @@ export function MemberForm({
           {pending ? 'Saving…' : 'Save access'}
         </Button>
       </div>
+      <fieldset className="mt-4 rounded-lg border p-3">
+        <legend className="px-1 text-xs font-semibold">Additional roles</legend>
+        <div className="flex flex-wrap gap-x-5 gap-y-3">
+          {roles.map((role) => (
+            <label key={role.id} className="flex items-center gap-2 text-sm">
+              <input
+                name="extraRoles"
+                type="checkbox"
+                value={role.id}
+                defaultChecked={extraRoles.includes(role.id)}
+              />
+              {role.name}
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <Feedback state={state} />
     </form>
   );

@@ -967,6 +967,39 @@ export type Database = {
           },
         ];
       };
+      staff_additional_roles: {
+        Row: {
+          restaurant_id: string;
+          membership_id: string;
+          role_id: string;
+        };
+        Insert: {
+          restaurant_id: string;
+          membership_id: string;
+          role_id: string;
+        };
+        Update: {
+          restaurant_id?: string;
+          membership_id?: string;
+          role_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'staff_additional_roles_restaurant_id_membership_id_fkey';
+            columns: ['restaurant_id', 'membership_id'];
+            isOneToOne: false;
+            referencedRelation: 'staff_memberships';
+            referencedColumns: ['restaurant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'staff_additional_roles_restaurant_id_role_id_fkey';
+            columns: ['restaurant_id', 'role_id'];
+            isOneToOne: false;
+            referencedRelation: 'roles';
+            referencedColumns: ['restaurant_id', 'id'];
+          },
+        ];
+      };
       staff_invitations: {
         Row: {
           id: string;
@@ -1366,6 +1399,16 @@ export type Database = {
           p_restaurant: string;
           p_member: string;
           p_role: string;
+          p_status: Database['public']['Enums']['membership_status'];
+        };
+        Returns: undefined;
+      };
+      set_staff_roles: {
+        Args: {
+          p_restaurant: string;
+          p_member: string;
+          p_role: string;
+          p_extra_roles: string[];
           p_status: Database['public']['Enums']['membership_status'];
         };
         Returns: undefined;

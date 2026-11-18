@@ -78,6 +78,13 @@ export const developmentPhases = [
 
 export const adminModules = [
   {
+    slug: 'people',
+    title: 'People',
+    description: 'Browse staff members and registered customers.',
+    phase: 3,
+    icon: 'customers',
+  },
+  {
     slug: 'orders',
     title: 'Orders',
     description: 'Accept, prepare and complete orders from one place.',

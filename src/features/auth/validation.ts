@@ -77,6 +77,7 @@ export const invitationSchema = z.object({ email: emailSchema, role: z.uuid() })
 export const memberSchema = z.object({
   member: z.uuid(),
   role: z.uuid(),
+  extraRoles: z.array(z.uuid()).max(20),
   status: z.enum(['active', 'suspended']),
 });
 export const tokenSchema = z.string().regex(/^[a-f0-9]{64}$/);
