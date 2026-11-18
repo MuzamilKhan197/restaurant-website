@@ -1,0 +1,17 @@
+{
+  "name": "saffron-and-ember",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Restaurant website, SQLite order and reservation backend, and authenticated management dashboard.",
+  "scripts": {
+    "dev": "node scripts/server.mjs",
+    "setup": "node scripts/setup.mjs",
+    "backup": "node scripts/backup.mjs",
+    "start": "node scripts/server.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "check": "node scripts/check.mjs"
+  },
+  "engines": { "node": ">=22.13" }
+}

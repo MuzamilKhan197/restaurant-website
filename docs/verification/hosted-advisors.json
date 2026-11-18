@@ -1,0 +1,28 @@
+[
+  {
+    "type": "security",
+    "findings": [
+      {
+        "name": "rls_enabled_no_policy",
+        "level": "INFO",
+        "count": 2,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy"
+      }
+    ]
+  },
+  {
+    "type": "performance",
+    "findings": [
+      {
+        "name": "unused_index",
+        "level": "INFO",
+        "count": 31,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index"
+      }
+    ]
+  },
+  {
+    "type": "health",
+    "findings": []
+  }
+]

@@ -1,0 +1,12 @@
+import ts from 'typescript';
+import path from 'node:path';
+const root=process.cwd(),virtual=path.join(root,'support-edge-runtime.virtual.d.ts');
+const options={target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext,moduleResolution:ts.ModuleResolutionKind.Bundler,strict:true,noEmit:true,allowImportingTsExtensions:true,skipLibCheck:true,lib:['lib.esnext.d.ts','lib.dom.d.ts','lib.dom.iterable.d.ts'],paths:{'npm:@supabase/supabase-js@2.119.0':['./node_modules/@supabase/supabase-js']}};
+const host=ts.createCompilerHost(options),read=host.readFile,exists=host.fileExists,source=host.getSourceFile;
+const declaration='declare const Deno:{env:{get(name:string):string|undefined};serve(handler:(request:Request)=>Response|Promise<Response>):void};';
+host.readFile=(name)=>path.resolve(name)===virtual?declaration:read(name);
+host.fileExists=name=>path.resolve(name)===virtual||exists(name);
+host.getSourceFile=(name,languageVersion,onError,shouldCreate)=>path.resolve(name)===virtual?ts.createSourceFile(name,declaration,languageVersion):source(name,languageVersion,onError,shouldCreate);
+const program=ts.createProgram([path.join(root,'supabase/functions/support-files/index.ts'),virtual],options,host);
+const errors=ts.getPreEmitDiagnostics(program);
+if(errors.length){console.error(ts.formatDiagnosticsWithColorAndContext(errors,{getCurrentDirectory:()=>root,getNewLine:()=>'\n',getCanonicalFileName:name=>name}));process.exitCode=1;}else console.log('Support Edge Function typecheck passed against the installed pinned SDK.');

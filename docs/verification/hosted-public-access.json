@@ -1,0 +1,17 @@
+[
+  {
+    "check": "schema version",
+    "status": 200,
+    "version": 3
+  },
+  {
+    "check": "private orders",
+    "status": 401,
+    "code": "42501"
+  },
+  {
+    "check": "staff access RPC",
+    "status": 401,
+    "code": "42501"
+  }
+]

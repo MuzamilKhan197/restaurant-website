@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const env=Object.fromEntries((await readFile('.env.local','utf8')).split(/\r?\n/).filter(line=>line&&!line.startsWith('#')&&line.includes('=')).map(line=>[line.slice(0,line.indexOf('=')),line.slice(line.indexOf('=')+1)]));
+const url=new URL('/functions/v1/support-files',env.NEXT_PUBLIC_SUPABASE_URL);
+const headers={apikey:env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY};
+const method=await fetch(url,{headers,signal:AbortSignal.timeout(15000)});assert.equal(method.status,405);
+const form=new FormData();form.set('restaurant_id',env.RESTAURANT_ID);form.set('ticket_id','12345678-1234-4234-8234-123456789abc');form.set('message_id','12345678-1234-4234-8234-123456789abd');form.set('token','0'.repeat(64));form.set('file',new File(['verification'],'verification.txt',{type:'text/plain'}));
+const denied=await fetch(url,{method:'POST',headers,body:form,signal:AbortSignal.timeout(20000)});
+const body=await denied.json();assert.equal(denied.status,403,JSON.stringify(body));assert.equal(body.url,undefined);
+console.log('Hosted support-files: method gate passed; invalid guest capability denied before Storage. No test records created.');

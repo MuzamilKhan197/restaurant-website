@@ -1,0 +1,143 @@
+export const site = {
+  name: 'Saffron & Ember',
+  description: 'A little fire, a little soul, and something delicious to share.',
+  currency: 'PKR',
+  locale: 'en-PK',
+  location: 'Lahore, Pakistan',
+  sampleBusiness: true,
+  customerLinks: [
+    { label: 'Home', href: '/' },
+    { label: 'Our menu', href: '/menu' },
+    { label: 'Our story', href: '/about' },
+    { label: 'Visit us', href: '/contact' },
+  ],
+} as const;
+
+export const developmentPhases = [
+  {
+    number: 1,
+    title: 'Foundation & design system',
+    summary: 'One Next.js application, responsive layouts and reusable UI components.',
+    status: 'complete',
+  },
+  {
+    number: 2,
+    title: 'Database & security',
+    summary: 'Supabase PostgreSQL, migrations, restaurant relationships and RLS.',
+    status: 'complete',
+  },
+  {
+    number: 3,
+    title: 'Authentication & permissions',
+    summary: 'Customer accounts, staff invitations, roles and backend access checks.',
+    status: 'complete',
+  },
+  {
+    number: 4,
+    title: 'Menu management',
+    summary: 'Categories, products, image uploads, variants and add-ons.',
+    status: 'complete',
+  },
+  {
+    number: 5,
+    title: 'Customer experience',
+    summary: 'Accounts, saved addresses, order history and the connected storefront.',
+    status: 'complete',
+  },
+  {
+    number: 6,
+    title: 'Checkout & order management',
+    summary: 'Guest checkout, trusted totals, status tracking and staff workflows.',
+    status: 'complete',
+  },
+  {
+    number: 7,
+    title: 'Customer support',
+    summary: 'Private guest/customer tickets, attachments, replies and assignments.',
+    status: 'complete',
+  },
+  {
+    number: 8,
+    title: 'Reports & insights',
+    summary: 'Actual sales, popular products, customer history and audit logs.',
+    status: 'current',
+  },
+  {
+    number: 9,
+    title: 'Website controls',
+    summary: 'Normal, orders paused and maintenance modes.',
+    status: 'planned',
+  },
+  {
+    number: 10,
+    title: 'Release verification',
+    summary: 'Permission tests, responsive checks, release documentation and deployment.',
+    status: 'planned',
+  },
+] as const;
+
+export const adminModules = [
+  {
+    slug: 'orders',
+    title: 'Orders',
+    description: 'Accept, prepare and complete orders from one place.',
+    phase: 6,
+    icon: 'orders',
+  },
+  {
+    slug: 'menu',
+    title: 'Menu management',
+    description: 'Manage categories, dishes, prices, variants and add-ons.',
+    phase: 4,
+    icon: 'menu',
+  },
+  {
+    slug: 'customers',
+    title: 'Customers',
+    description: 'Find customer profiles and their relevant order history.',
+    phase: 5,
+    icon: 'customers',
+  },
+  {
+    slug: 'staff',
+    title: 'Staff & permissions',
+    description: 'Invite your team and assign carefully scoped roles.',
+    phase: 3,
+    icon: 'staff',
+  },
+  {
+    slug: 'support',
+    title: 'Support inbox',
+    description: 'Assign, reply to and resolve customer tickets.',
+    phase: 7,
+    icon: 'support',
+  },
+  {
+    slug: 'reports',
+    title: 'Reports',
+    description: 'Understand sales, order trends and popular dishes.',
+    phase: 8,
+    icon: 'reports',
+  },
+  {
+    slug: 'activity',
+    title: 'Activity log',
+    description: 'Review important actions taken by your team.',
+    phase: 8,
+    icon: 'activity',
+  },
+  {
+    slug: 'settings',
+    title: 'Restaurant settings',
+    description: 'Keep business details, hours and delivery settings in sync.',
+    phase: 2,
+    icon: 'settings',
+  },
+  {
+    slug: 'website',
+    title: 'Website controls',
+    description: 'Manage storefront availability and maintenance messages.',
+    phase: 9,
+    icon: 'website',
+  },
+] as const;

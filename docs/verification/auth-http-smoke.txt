@@ -1,0 +1,4 @@
+Login loads without a redirect loop and is not cached.
+Account, workspace and staff routes reject anonymous access.
+Health reports the connected schema v3.
+Alternate loopback entry loads; canonical navigation is verified in the browser.

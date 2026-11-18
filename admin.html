@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="#263d31">
+    <title>Restaurant management — Saffron &amp; Ember</title>
+    <link rel="icon" href="assets/favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <script type="module" src="admin.js"></script>
+</head>
+
+<body class="admin-body"><a class="skip-link" href="#admin-main">Skip to management</a>
+    <header class="admin-header"><a class="brand" href="/"><img src="assets/favicon.svg" width="34" height="34"
+                alt=""><span>Saffron &amp; Ember<small>RESTAURANT MANAGEMENT</small></span></a>
+        <div><a class="text-link" href="/">View website &nearr;</a><span id="admin-email" class="small"></span><button
+                class="button button-small button-outline" id="logout" hidden>Sign out</button></div>
+    </header>
+    <main id="admin-main" tabindex="-1">
+        <section id="login-view" class="login-view">
+            <div class="form-panel">
+                <p class="eyebrow">WELCOME BACK</p>
+                <h1>The kitchen<br><em>control room.</em></h1>
+                <p class="small">Sign in to manage orders, tables, messages and your menu.</p>
+                <form id="login-form"><label>Email address<input name="email" type="email" required
+                            autocomplete="username" maxlength="150"
+                            placeholder="admin@restaurant.local"></label><label>Password<input name="password"
+                            type="password" required autocomplete="current-password" maxlength="200"
+                            placeholder="Your administrator password"></label><button class="button full-width"
+                        type="submit">Sign in &rarr;</button>
+                    <p class="submission-error" id="login-error" role="alert"></p>
+                </form>
+                <details class="setup-help">
+                    <summary>First time here?</summary>
+                    <p>The server creates unique initial administrator credentials in the project's <code>.env</code>
+                        file. Open that file locally to sign in, then change your password in Settings. Passwords are
+                        never served by the website.</p>
+                </details>
+            </div>
+        </section>
+        <section id="dashboard-view" class="dashboard-layout" hidden>
+            <aside class="admin-sidebar">
+                <p class="eyebrow">YOUR RESTAURANT</p>
+                <nav aria-label="Management sections"><button data-tab="overview"
+                        aria-current="page">Overview</button><button data-tab="orders">Orders</button><button
+                        data-tab="reservations">Reservations</button><button data-tab="messages">Message
+                        inbox</button><button data-tab="menu">Menu &amp; availability</button><button
+                        data-tab="settings">Business settings</button><button data-tab="audit">Activity log</button>
+                </nav>
+                <p class="small">Requests stay on this server.<br>Email and online payment providers are not connected.
+                </p>
+            </aside>
+            <div class="admin-workspace">
+                <div class="admin-page-heading">
+                    <div>
+                        <p class="eyebrow">A LITTLE ORDER BEHIND THE SCENES</p>
+                        <h1 id="admin-page-title">Overview</h1>
+                    </div><button class="button button-small button-outline" id="admin-refresh">Refresh</button>
+                </div>
+                <p id="admin-feedback" class="admin-feedback" role="status"></p>
+                <div id="admin-content" aria-live="polite"></div>
+            </div>
+        </section>
+    </main>
+    <dialog id="dish-dialog" class="checkout-dialog" aria-labelledby="dish-dialog-title">
+        <div class="dialog-heading">
+            <h2 id="dish-dialog-title">Edit dish</h2><button class="icon-button" data-close-admin
+                aria-label="Close dish editor">&#215;</button>
+        </div>
+        <form id="dish-form"><input name="id" type="hidden"><input name="version" type="hidden"><label>Dish name<input
+                    name="name" required maxlength="100"></label><label>Description<textarea name="description" required
+                    maxlength="600" rows="3"></textarea></label>
+            <div class="form-row"><label>Category<select name="category">
+                        <option>Starters</option>
+                        <option>Mains</option>
+                        <option>From the grill</option>
+                        <option>Desserts</option>
+                        <option>Drinks</option>
+                    </select></label><label>Price (PKR)<input name="price" type="number" min="1" max="1000000" step="1"
+                        required></label></div><label>Allergens<input name="allergens" required maxlength="200"
+                    placeholder="Milk, wheat, eggs, or None listed"></label><label>Illustrative image<select
+                    name="image">
+                    <option value="salad">Salad</option>
+                    <option value="hummus">Hummus</option>
+                    <option value="soup">Soup</option>
+                    <option value="chicken">Chicken</option>
+                    <option value="steak">Steak</option>
+                    <option value="salmon">Salmon</option>
+                    <option value="pasta">Pasta</option>
+                    <option value="cake">Chocolate cake</option>
+                    <option value="cheesecake">Cheesecake</option>
+                    <option value="lemonade">Cooler</option>
+                    <option value="coffee">Coffee</option>
+                </select></label>
+            <fieldset class="admin-checkboxes">
+                <legend>Dietary labels (verify before use)</legend><label><input type="checkbox" name="tags"
+                        value="Vegetarian"> Vegetarian</label><label><input type="checkbox" name="tags" value="Vegan">
+                    Vegan</label><label><input type="checkbox" name="tags" value="Gluten-free">
+                    Gluten-free</label><label><input type="checkbox" name="tags" value="Signature"> Signature</label>
+            </fieldset>
+            <fieldset class="admin-checkboxes">
+                <legend>Visibility</legend><label><input type="checkbox" name="available" checked> Available to
+                    order</label><label><input type="checkbox" name="active" checked> Listed on
+                    menu</label><label><input type="checkbox" name="featured"> Featured on home page</label>
+            </fieldset>
+            <p class="small">Unlist a dish to archive it. Existing orders keep their original dish names and prices.</p>
+            <p class="submission-error" id="dish-error" role="alert"></p><button class="button full-width"
+                type="submit">Save dish &rarr;</button>
+        </form>
+    </dialog>
+    <dialog id="record-dialog" class="record-dialog" aria-labelledby="record-dialog-title">
+        <div class="dialog-heading">
+            <h2 id="record-dialog-title">Request details</h2><button class="icon-button" data-close-admin
+                aria-label="Close details">&#215;</button>
+        </div>
+        <div id="admin-record-detail"></div>
+    </dialog>
+</body>
+
+</html>

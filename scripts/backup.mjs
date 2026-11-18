@@ -1,0 +1,11 @@
+import { DatabaseSync } from 'node:sqlite';
+import { resolve } from 'node:path';
+import { mkdir } from 'node:fs/promises';
+import { ensureSetup } from '../server/setup.js';
+const config = { ...await ensureSetup(resolve('.')), ...process.env };
+await mkdir('backups', { recursive: true });
+const filename = resolve('backups', `restaurant-${new Date().toISOString().replace(/[:.]/g, '-')}.sqlite`);
+const database = new DatabaseSync(resolve(config.DB_PATH || 'storage/restaurant.sqlite'), { readOnly: true });
+database.prepare('VACUUM INTO ?').run(filename);
+database.close();
+console.log(`Consistent SQLite backup saved: ${filename}`);
