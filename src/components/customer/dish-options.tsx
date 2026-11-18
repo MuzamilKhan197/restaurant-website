@@ -99,6 +99,7 @@ export function DishOptions({
       ))}
       <p className="text-2xl font-semibold">{formatPrice(total / 100, currency)}</p>
       <Button
+        type="button"
         disabled={
           !available ||
           !ordering ||

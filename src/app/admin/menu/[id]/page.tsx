@@ -17,7 +17,7 @@ export default async function DishEditor({ params }: { params: Promise<{ id: str
   if (!access.permissions.some((p) => ['menu.read', 'menu.manage'].includes(p)))
     redirect('/access-denied');
   const { id } = await params;
-  if (!z.uuid().safeParse(id).success) notFound();
+  if (!z.guid().safeParse(id).success) notFound();
   const client = await createClient();
   const tenant = access.restaurant_id;
   const canEdit = access.permissions.includes('menu.manage');

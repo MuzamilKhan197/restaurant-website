@@ -55,7 +55,7 @@ export const salesReportSchema = z.object({
   popular: z
     .array(
       z.object({
-        product_id: z.uuid(),
+        product_id: z.guid(),
         name: z.string(),
         units: count,
         orders: count,

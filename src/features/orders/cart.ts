@@ -43,6 +43,10 @@ export function useCart() {
   return useMemo(() => parse(raw), [raw]);
 }
 export function addToCart(item: StoredItem) {
+  const selection = storedItemSchema.safeParse(item);
+  if (!selection.success)
+    throw new Error('This dish selection could not be added. Refresh the menu and try again.');
+  item = selection.data;
   const cart = parse(snapshot()),
     signature = (i: StoredItem) =>
       JSON.stringify([i.product_id, i.variant_id, [...i.addon_ids].sort()]);

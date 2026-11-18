@@ -2,6 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { cartSchema, checkoutSchema, cashUpdateSchema } from '../src/features/orders/validation.ts';
 const uuid = '50000000-0000-4000-8000-000000000001';
+test('checkout accepts the product IDs used by published seed dishes', () => {
+  const seededDish = {
+    product_id: '03000000-0000-0000-0000-000000000002',
+    variant_id: null,
+    quantity: 1,
+    addon_ids: [],
+  };
+  assert.deepEqual(cartSchema.parse([seededDish]), [seededDish]);
+  assert.equal(cartSchema.safeParse([{ ...seededDish, product_id: 'hummus' }]).success, false);
+});
 test('cash receipts and refunds validate the database-required previous payment state', () => {
   assert.equal(
     cashUpdateSchema.safeParse({ id: uuid, previous: 'unpaid', status: 'paid' }).success,

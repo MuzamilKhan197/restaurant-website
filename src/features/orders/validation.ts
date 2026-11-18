@@ -1,10 +1,11 @@
 import { z } from 'zod';
 export const cartItemSchema = z.object({
-  product_id: z.uuid(),
-  variant_id: z.uuid().nullable(),
+  // PostgreSQL also accepts catalog IDs that lack RFC version and variant bits.
+  product_id: z.guid(),
+  variant_id: z.guid().nullable(),
   quantity: z.number().int().min(1).max(20),
   addon_ids: z
-    .array(z.uuid())
+    .array(z.guid())
     .max(100)
     .refine((ids) => new Set(ids).size === ids.length),
 });

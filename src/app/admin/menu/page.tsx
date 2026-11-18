@@ -44,7 +44,7 @@ export default async function MenuManagement({
     .order('id')
     .range((page - 1) * 30, page * 30 - 1);
   if (q) dishesQuery = dishesQuery.ilike('name', '%' + q.replace(/[\\%_]/g, '\\$&') + '%');
-  const category = z.uuid().safeParse(params.category);
+  const category = z.guid().safeParse(params.category);
   if (category.success) dishesQuery = dishesQuery.eq('category_id', category.data);
   const [categories, products, groups, addons] = await Promise.all([
     client

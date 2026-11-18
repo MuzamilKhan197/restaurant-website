@@ -19,7 +19,7 @@ const money = z
       return z.NEVER;
     }
   });
-const id = z.uuid();
+const id = z.guid();
 const optionalId = z.union([id, z.literal('')]).optional();
 const name = z.string().trim().min(1, 'Enter a name.').max(100);
 const sort = z.coerce.number().int().min(0).max(10000);
