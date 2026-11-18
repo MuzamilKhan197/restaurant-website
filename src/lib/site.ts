@@ -107,8 +107,15 @@ export const adminModules = [
   },
   {
     slug: 'staff',
-    title: 'Staff & permissions',
+    title: 'Role Assignment',
     description: 'Invite your team and assign carefully scoped roles.',
+    phase: 3,
+    icon: 'staff',
+  },
+  {
+    slug: 'roles',
+    title: 'Roles & Permissions',
+    description: 'View available actions and manage custom roles.',
     phase: 3,
     icon: 'staff',
   },

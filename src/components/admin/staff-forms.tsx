@@ -204,15 +204,16 @@ export function RoleForm({
       <fieldset>
         <legend className="mb-3 text-xs font-medium">Allowed actions</legend>
         <div className="grid gap-3 sm:grid-cols-2">
-          {permissions
-            .filter((p) => !['staff.manage', 'roles.manage'].includes(p.key))
-            .map((p) => (
+          {permissions.map((p) => {
+            const ownerOnly = p.key === 'staff.manage' || p.key === 'roles.manage';
+            return (
               <label key={p.key} className="flex items-start gap-2 text-[11px] leading-5">
                 <input
                   type="checkbox"
                   name="permissions"
                   value={p.key}
                   defaultChecked={selected.includes(p.key)}
+                  disabled={ownerOnly}
                   className="mt-1 accent-blue-600"
                 />
                 <span>
@@ -220,7 +221,8 @@ export function RoleForm({
                   <span className="text-muted-foreground">{p.description}</span>
                 </span>
               </label>
-            ))}
+            );
+          })}
         </div>
       </fieldset>
       <Button size="sm" disabled={pending}>

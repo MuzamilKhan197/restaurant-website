@@ -107,6 +107,7 @@ export async function deleteRole(_state: AuthState, form: FormData): Promise<Aut
       error: 'Role could not be deleted. Reassign members and revoke its invitations first.',
     };
   revalidatePath('/admin/staff');
+  revalidatePath('/admin/roles');
   return { success: 'Custom role deleted.' };
 }
 export async function acceptInvitation(_state: AuthState, form: FormData): Promise<AuthState> {

@@ -11,7 +11,7 @@ export default async function PeoplePage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const access = await requireStaff();
+  const access = await requireStaff('people.read');
   const canSeeStaff = access.permissions.includes('staff.read');
   const canSeeCustomers = access.permissions.includes('customers.read');
   if (!canSeeStaff && !canSeeCustomers) redirect('/access-denied');

@@ -3,19 +3,13 @@ import { requireStaff } from '@/features/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  InvitationForm,
-  MemberForm,
-  RevokeForm,
-  RoleForm,
-  DeleteRoleForm,
-} from '@/components/admin/staff-forms';
-export const metadata = { title: 'Staff & permissions' };
+import { InvitationForm, MemberForm, RevokeForm } from '@/components/admin/staff-forms';
+export const metadata = { title: 'Role Assignment' };
 export const dynamic = 'force-dynamic';
 export default async function StaffPage() {
   const access = await requireStaff('staff.read');
   const client = await createClient();
-  const [members, roles, permissions, grants, invitations, assignments] = await Promise.all([
+  const [members, roles, invitations, assignments] = await Promise.all([
     client
       .from('staff_memberships')
       .select('id,user_id,display_name,contact_email,role_id,status')
@@ -26,11 +20,6 @@ export default async function StaffPage() {
       .select('id,name,slug,is_system,is_active')
       .eq('restaurant_id', access.restaurant_id)
       .order('created_at'),
-    client.from('permissions').select('key,description').order('key'),
-    client
-      .from('role_permissions')
-      .select('role_id,permission_key')
-      .eq('restaurant_id', access.restaurant_id),
     access.is_owner
       ? client
           .from('staff_invitations')
@@ -44,9 +33,7 @@ export default async function StaffPage() {
       .select('membership_id,role_id')
       .eq('restaurant_id', access.restaurant_id),
   ]);
-  if (
-    [members, roles, permissions, grants, invitations, assignments].some((result) => result.error)
-  )
+  if ([members, roles, invitations, assignments].some((result) => result.error))
     throw new Error('Unable to load team access. Please retry.');
   const staffRoles = (roles.data || []).filter(
     (role) => role.is_active && !['owner', 'customer'].includes(role.slug),
@@ -54,7 +41,7 @@ export default async function StaffPage() {
   return (
     <>
       <p className="eyebrow text-[9px]">The people behind the experience</p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight">Your team. The right access.</h1>
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight">Role Assignment</h1>
       <p className="mt-3 max-w-2xl text-xs leading-6 text-muted-foreground">
         Active roles control access in the backend and database. Only the restaurant owner can
         invite staff or change permissions.
@@ -155,56 +142,6 @@ export default async function StaffPage() {
           </CardContent>
         </Card>
       )}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-sm">Roles &amp; permissions</CardTitle>
-          <CardDescription className="text-xs leading-6">
-            Built-in role identities are protected. Custom roles can grant operational access; staff
-            and role management remain owner-only.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {roles.data?.map((role) => (
-            <details key={role.id} className="rounded-xl border p-4">
-              <summary className="cursor-pointer text-xs font-medium">
-                {role.name}{' '}
-                <span className="ml-2 font-normal text-muted-foreground">
-                  {role.is_system ? 'Built-in' : 'Custom'}
-                </span>
-              </summary>
-              {access.is_owner && !role.is_system ? (
-                <>
-                  <RoleForm
-                    role={role}
-                    permissions={permissions.data || []}
-                    selected={grants.data
-                      ?.filter((g) => g.role_id === role.id)
-                      .map((g) => g.permission_key)}
-                  />
-                  <DeleteRoleForm id={role.id} />
-                </>
-              ) : (
-                <p className="mt-4 text-[11px] leading-6 text-muted-foreground">
-                  {role.slug === 'owner'
-                    ? 'All restaurant permissions; verified ownership required.'
-                    : grants.data
-                        ?.filter((g) => g.role_id === role.id)
-                        .map((g) => g.permission_key)
-                        .join(', ') || 'No staff permissions.'}
-                </p>
-              )}
-            </details>
-          ))}
-          {access.is_owner && (
-            <details className="rounded-xl border border-blue-200 bg-blue-50/30 p-4">
-              <summary className="cursor-pointer text-xs font-medium text-blue-800">
-                Create a custom role
-              </summary>
-              <RoleForm permissions={permissions.data || []} />
-            </details>
-          )}
-        </CardContent>
-      </Card>
     </>
   );
 }
