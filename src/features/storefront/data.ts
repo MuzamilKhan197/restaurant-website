@@ -105,14 +105,16 @@ export async function getPublicMenu({
       count: 0,
     };
   const ids = products.data.map((p) => p.id);
-  const [variants, images] = ids.length
+  const [variants, images, links] = ids.length
     ? await Promise.all([
         client
           .from('product_variants')
-          .select('product_id,price_minor')
+          .select('product_id,id,name,price_minor,is_default')
           .eq('restaurant_id', tenant)
           .eq('is_active', true)
-          .in('product_id', ids),
+          .in('product_id', ids)
+          .order('sort_order')
+          .order('id'),
         client
           .from('product_images')
           .select('product_id,object_path,alt_text')
@@ -120,12 +122,39 @@ export async function getPublicMenu({
           .in('product_id', ids)
           .order('sort_order')
           .order('created_at'),
+        client
+          .from('product_addon_groups')
+          .select('product_id,addon_group_id')
+          .eq('restaurant_id', tenant)
+          .in('product_id', ids)
+          .order('sort_order'),
+      ])
+    : [
+        { data: [], error: null },
+        { data: [], error: null },
+        { data: [], error: null },
+      ];
+  const groupIds = [...new Set((links.data || []).map((link) => link.addon_group_id))];
+  const [groups, addons] = groupIds.length
+    ? await Promise.all([
+        client
+          .from('addon_groups')
+          .select('id,name,min_selections,max_selections')
+          .eq('restaurant_id', tenant)
+          .eq('is_active', true)
+          .in('id', groupIds),
+        client
+          .from('addons')
+          .select('id,name,price_minor,is_available,addon_group_id')
+          .eq('restaurant_id', tenant)
+          .in('addon_group_id', groupIds)
+          .order('name'),
       ])
     : [
         { data: [], error: null },
         { data: [], error: null },
       ];
-  if (variants.error || images.error)
+  if (variants.error || images.error || links.error || groups.error || addons.error)
     return {
       ...context,
       state: 'unavailable' as const,
@@ -156,6 +185,27 @@ export async function getPublicMenu({
       allergens: p.allergens.join(', ') || 'Ask restaurant staff',
       available: p.is_available,
       featured: p.is_featured,
+      selection: {
+        productId: p.id,
+        basePrice: p.base_price_minor,
+        ordering: context.settings.website_mode === 'normal',
+        variants: sizes,
+        groups: (links.data || [])
+          .filter((link) => link.product_id === p.id)
+          .flatMap((link) => {
+            const group = (groups.data || []).find((entry) => entry.id === link.addon_group_id);
+            return group
+              ? [
+                  {
+                    ...group,
+                    addons: (addons.data || []).filter(
+                      (addon) => addon.addon_group_id === group.id,
+                    ),
+                  },
+                ]
+              : [];
+          }),
+      },
     };
   });
   return { ...context, dishes, categories: categories.data, count: products.count || 0 };

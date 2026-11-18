@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowUpRight, UtensilsCrossed } from 'lucide-react';
+import { UtensilsCrossed } from 'lucide-react';
+import { DishOptions } from './dish-options';
 import { Badge } from '@/components/ui/badge';
 import { formatPrice } from '@/features/menu/utils';
 import type { Dish } from '@/features/menu/types';
@@ -8,11 +8,7 @@ import type { Dish } from '@/features/menu/types';
 export function DishCard({ dish }: { dish: Dish }) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-lg hover:shadow-foreground/5">
-      <Link
-        href={`/menu/${dish.id}`}
-        className="relative block aspect-[1.35] overflow-hidden"
-        aria-label={`View ${dish.name}`}
-      >
+      <div className="relative block aspect-[1.35] overflow-hidden">
         {dish.imageUrl || dish.image ? (
           <Image
             src={dish.imageUrl || `/assets/${dish.image}.jpg`}
@@ -41,32 +37,31 @@ export function DishCard({ dish }: { dish: Dish }) {
                   : dish.category}
           </Badge>
         </span>
-      </Link>
+      </div>
       <div className="flex flex-1 flex-col p-4 sm:p-5">
         <p className="eyebrow text-[8px]">{dish.category}</p>
-        <h3 className="mt-2 font-serif text-[22px] leading-snug tracking-tight">
-          <Link href={`/menu/${dish.id}`} className="hover:text-brand-strong">
-            {dish.name}
-          </Link>
-        </h3>
+        <h3 className="mt-2 font-serif text-[22px] leading-snug tracking-tight">{dish.name}</h3>
         <p className="mt-2 flex-1 text-xs leading-6 text-muted-foreground">{dish.description}</p>
         <p className="mt-3 text-[10px] text-muted-foreground">Allergens: {dish.allergens}</p>
         {!dish.available && (
           <p className="mt-2 text-xs font-semibold text-brand-strong">Currently unavailable</p>
         )}
-        <div className="mt-4 flex items-center justify-between border-t pt-4">
-          <span className="text-sm font-semibold">
-            {dish.fromPrice && 'From '}
-            {formatPrice(dish.price, dish.currency)}
-          </span>
-          <Link
-            href={`/menu/${dish.id}`}
-            aria-label={`View details for ${dish.name}`}
-            className="flex size-8 items-center justify-center rounded-full bg-secondary transition-colors hover:bg-primary"
-          >
-            <ArrowUpRight className="size-4" />
-          </Link>
-        </div>
+        {dish.selection ? (
+          <DishOptions
+            {...dish.selection}
+            name={dish.name}
+            available={dish.available}
+            currency={dish.currency || 'PKR'}
+            compact
+          />
+        ) : (
+          <div className="mt-4 border-t pt-4">
+            <span className="text-sm font-semibold">
+              {dish.fromPrice && 'From '}
+              {formatPrice(dish.price, dish.currency)}
+            </span>
+          </div>
+        )}
       </div>
     </article>
   );

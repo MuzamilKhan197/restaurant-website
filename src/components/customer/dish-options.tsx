@@ -4,14 +4,7 @@ import { formatPrice } from '@/features/menu/utils';
 import { addToCart } from '@/features/orders/cart';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-type Variant = { id: string; name: string; price_minor: number; is_default: boolean };
-type Group = {
-  id: string;
-  name: string;
-  min_selections: number;
-  max_selections: number;
-  addons: { id: string; name: string; price_minor: number; is_available: boolean }[];
-};
+import type { DishVariant, DishAddonGroup } from '@/features/menu/types';
 export function DishOptions({
   basePrice,
   currency,
@@ -21,15 +14,17 @@ export function DishOptions({
   productId,
   name,
   ordering,
+  compact = false,
 }: {
   basePrice: number;
   currency: string;
-  variants: Variant[];
-  groups: Group[];
+  variants: DishVariant[];
+  groups: DishAddonGroup[];
   available: boolean;
   productId: string;
   name: string;
   ordering: boolean;
+  compact?: boolean;
 }) {
   const [variant, setVariant] = useState(
     variants.find((v) => v.is_default)?.id || variants[0]?.id || '',
@@ -43,7 +38,7 @@ export function DishOptions({
       .filter((a) => selected.includes(a.id))
       .reduce((sum, a) => sum + a.price_minor, 0);
   return (
-    <div className="mt-7 space-y-6">
+    <div className={compact ? 'mt-4 space-y-3 border-t pt-4' : 'mt-7 space-y-6'}>
       {variants.length > 0 && (
         <fieldset>
           <legend className="mb-3 text-sm font-semibold">Choose a size</legend>
@@ -54,7 +49,7 @@ export function DishOptions({
             >
               <input
                 type="radio"
-                name="variant"
+                name={`variant-${productId}`}
                 checked={variant === v.id}
                 onChange={() => setVariant(v.id)}
               />
@@ -97,51 +92,65 @@ export function DishOptions({
           ))}
         </fieldset>
       ))}
-      <p className="text-2xl font-semibold">{formatPrice(total / 100, currency)}</p>
-      <Button
-        type="button"
-        disabled={
-          !available ||
-          !ordering ||
-          groups.some(
-            (g) => g.addons.filter((a) => selected.includes(a.id)).length < g.min_selections,
-          )
-        }
-        onClick={() => {
-          try {
-            addToCart({
-              product_id: productId,
-              variant_id: variant || null,
-              quantity: 1,
-              addon_ids: selected,
-              name,
-              variant_name: variants.find((v) => v.id === variant)?.name || '',
-              extras: groups
-                .flatMap((g) => g.addons)
-                .filter((a) => selected.includes(a.id))
-                .map((a) => a.name),
-              unit_estimate: total,
-              currency,
-            });
-            setFeedback('Added to your cart.');
-          } catch (error) {
-            setFeedback(error instanceof Error ? error.message : 'Unable to save your cart.');
+      <div className={compact ? 'flex items-center justify-between gap-2' : 'space-y-4'}>
+        <p className={compact ? 'text-sm font-semibold' : 'text-2xl font-semibold'}>
+          {formatPrice(total / 100, currency)}
+        </p>
+        <Button
+          type="button"
+          size={compact ? 'sm' : 'default'}
+          aria-label={`Add ${name} to cart`}
+          disabled={
+            !available ||
+            !ordering ||
+            groups.some(
+              (g) => g.addons.filter((a) => selected.includes(a.id)).length < g.min_selections,
+            )
           }
-        }}
-      >
-        Add to cart
-      </Button>
-      <Link href="/cart" className="ml-4 text-sm underline">
-        View cart
-      </Link>
-      <p role="status" className="rounded-xl bg-secondary p-4 text-sm">
-        {feedback ||
-          (!available
-            ? 'This dish is currently unavailable.'
-            : !ordering
-              ? 'Online orders are currently paused.'
-              : 'Choose your size and extras, then add to your cart.')}
-      </p>
+          onClick={() => {
+            try {
+              addToCart({
+                product_id: productId,
+                variant_id: variant || null,
+                quantity: 1,
+                addon_ids: selected,
+                name,
+                variant_name: variants.find((v) => v.id === variant)?.name || '',
+                extras: groups
+                  .flatMap((g) => g.addons)
+                  .filter((a) => selected.includes(a.id))
+                  .map((a) => a.name),
+                unit_estimate: total,
+                currency,
+              });
+              setFeedback('Added to your cart.');
+            } catch (error) {
+              setFeedback(error instanceof Error ? error.message : 'Unable to save your cart.');
+            }
+          }}
+        >
+          {compact ? 'Add' : 'Add to cart'}
+        </Button>
+      </div>
+      {compact ? (
+        <p role="status" className="text-xs text-muted-foreground">
+          {feedback || (!ordering ? 'Ordering paused' : '')}
+        </p>
+      ) : (
+        <>
+          <Link href="/cart" className="ml-4 text-sm underline">
+            View cart
+          </Link>
+          <p role="status" className="rounded-xl bg-secondary p-4 text-sm">
+            {feedback ||
+              (!available
+                ? 'This dish is currently unavailable.'
+                : !ordering
+                  ? 'Online orders are currently paused.'
+                  : 'Choose your size and extras, then add to your cart.')}
+          </p>
+        </>
+      )}
     </div>
   );
 }
