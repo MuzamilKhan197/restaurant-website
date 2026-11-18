@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { formatPrice } from '@/features/menu/utils';
 import { addToCart } from '@/features/orders/cart';
 import Link from 'next/link';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { DishVariant, DishAddonGroup } from '@/features/menu/types';
 export function DishOptions({
@@ -64,7 +65,7 @@ export function DishOptions({
           <legend className="mb-3 text-sm font-semibold">
             {g.name}{' '}
             <span className="font-normal text-muted-foreground">
-              (choose {g.min_selections}–{g.max_selections})
+              (choose {g.min_selections}-{g.max_selections})
             </span>
           </legend>
           {g.addons.map((a) => (
@@ -98,7 +99,11 @@ export function DishOptions({
         </p>
         <Button
           type="button"
-          size={compact ? 'sm' : 'default'}
+          size={compact ? 'icon' : 'default'}
+          variant={compact ? 'secondary' : 'default'}
+          className={
+            compact ? 'rounded-full hover:bg-primary hover:text-primary-foreground' : undefined
+          }
           aria-label={`Add ${name} to cart`}
           disabled={
             !available ||
@@ -129,7 +134,7 @@ export function DishOptions({
             }
           }}
         >
-          {compact ? 'Add' : 'Add to cart'}
+          {compact ? <Plus aria-hidden="true" /> : 'Add to cart'}
         </Button>
       </div>
       {compact ? (
