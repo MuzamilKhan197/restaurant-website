@@ -4,6 +4,15 @@ import { RoleForm, DeleteRoleForm } from '@/components/admin/staff-forms';
 
 export const metadata = { title: 'Roles & Permissions' };
 
+const roleRank = new Map([
+  ['owner', 0],
+  ['admin', 1],
+  ['manager', 2],
+  ['support-agent', 3],
+  ['developer', 4],
+  ['customer', 6],
+]);
+
 export default async function RolesPage() {
   const access = await requireStaff('roles.read');
   const client = await createClient();
@@ -21,6 +30,10 @@ export default async function RolesPage() {
   ]);
   if (roles.error || permissions.error || grants.error)
     throw new Error('Unable to load roles and permissions.');
+  const orderedRoles = [...roles.data].sort(
+    (a, b) =>
+      (roleRank.get(a.slug) ?? 5) - (roleRank.get(b.slug) ?? 5) || a.name.localeCompare(b.name),
+  );
 
   return (
     <section className="space-y-6">
@@ -35,7 +48,7 @@ export default async function RolesPage() {
         </details>
       )}
       <div className="space-y-3">
-        {roles.data.map((role) => {
+        {orderedRoles.map((role) => {
           const selected =
             role.slug === 'owner'
               ? permissions.data.map((action) => action.key)
