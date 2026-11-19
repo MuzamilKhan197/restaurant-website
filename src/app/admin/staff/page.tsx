@@ -1,3 +1,4 @@
+import { compareRoleRank } from '@/features/auth/permissions';
 import { invitationStatus } from '@/features/auth/invitation-status';
 import { requireStaff, requireUser } from '@/features/auth/session';
 import { createClient } from '@/lib/supabase/server';
@@ -49,9 +50,11 @@ export default async function StaffPage() {
         (!['roles.manage', 'staff.manage'].includes(grant.permission_key) &&
           access.permissions.includes(grant.permission_key)),
     );
-  const staffRoles = (roles.data || []).filter(
-    (role) => role.is_active && !['owner', 'customer'].includes(role.slug) && canAssign(role.id),
-  );
+  const staffRoles = (roles.data || [])
+    .filter(
+      (role) => role.is_active && !['owner', 'customer'].includes(role.slug) && canAssign(role.id),
+    )
+    .sort(compareRoleRank);
   return (
     <>
       <p className="eyebrow text-[9px]">The people behind the experience</p>

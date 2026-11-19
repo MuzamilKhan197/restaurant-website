@@ -22,3 +22,20 @@ export function visibleModule(slug: string, permissions: readonly string[]) {
     (slug === 'settings' && permissions.includes('settings.manage'))
   );
 }
+
+const roleRank = new Map([
+  ['owner', 0],
+  ['ceo-co-owner-super-admin', 1],
+  ['admin', 2],
+  ['manager', 3],
+  ['support-agent', 4],
+  ['developer', 5],
+  ['customer', 7],
+]);
+
+export function compareRoleRank(
+  a: { slug: string; name: string },
+  b: { slug: string; name: string },
+) {
+  return (roleRank.get(a.slug) ?? 6) - (roleRank.get(b.slug) ?? 6) || a.name.localeCompare(b.name);
+}
