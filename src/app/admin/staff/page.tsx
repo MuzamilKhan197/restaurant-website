@@ -100,6 +100,16 @@ export default async function StaffPage() {
               .filter((a) => a.membership_id === member.id)
               .map((a) => a.role_id)
               .sort((a, b) => rank(a) - rank(b));
+            const canEditMember =
+              canManage &&
+              member.user_id !== user.id &&
+              [member.role_id, ...extraRoles].every(canAssign) &&
+              roles.data?.find((role) => role.id === member.role_id)?.slug !== 'owner';
+            const showOwnAccess =
+              canManage &&
+              access.can_manage_all_staff_roles &&
+              !access.is_owner &&
+              member.user_id === user.id;
             return (
               <div key={member.id} id={member.id} className="scroll-mt-20 py-5 first:pt-0">
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -121,17 +131,15 @@ export default async function StaffPage() {
                     <Badge variant="outline">{member.status}</Badge>
                   </div>
                 </div>
-                {canManage &&
-                  member.user_id !== user.id &&
-                  [member.role_id, ...extraRoles].every(canAssign) &&
-                  roles.data?.find((r) => r.id === member.role_id)?.slug !== 'owner' && (
-                    <MemberForm
-                      key={JSON.stringify([member.role_id, member.status, extraRoles])}
-                      member={member}
-                      roles={staffRoles}
-                      extraRoles={extraRoles}
-                    />
-                  )}
+                {(canEditMember || showOwnAccess) && (
+                  <MemberForm
+                    key={JSON.stringify([member.role_id, member.status, extraRoles])}
+                    member={member}
+                    roles={staffRoles}
+                    extraRoles={extraRoles}
+                    readOnly={showOwnAccess}
+                  />
+                )}
               </div>
             );
           })}
@@ -154,7 +162,7 @@ export default async function StaffPage() {
                 <div>
                   <p className="break-all text-xs font-medium">{invite.email}</p>
                   <p className="mt-1 text-[11px] text-muted-foreground">
-                    {invitationStatus(invite)} · Expires{' '}
+                    {invitationStatus(invite)} � Expires{' '}
                     {new Date(invite.expires_at).toLocaleString('en-PK', {
                       timeZone: 'Asia/Karachi',
                     })}

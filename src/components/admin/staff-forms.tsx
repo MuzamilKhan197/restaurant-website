@@ -65,13 +65,13 @@ export function InvitationForm({ roles }: { roles: RoleChoice[] }) {
         </div>
       </div>
       <Button size="sm" disabled={pending || !roles.length}>
-        {pending ? 'Creating…' : 'Create invitation link'}
+        {pending ? 'Creating.' : 'Create invitation link'}
       </Button>
       <Feedback state={state} />
       {state.invitationUrl && (
         <div className="rounded-xl border bg-secondary/40 p-4">
           <label htmlFor="invitation-link" className="mb-2 block text-xs font-medium">
-            Private invitation link — copy it now
+            Private invitation link - copy it now
           </label>
           <Input
             id="invitation-link"
@@ -91,20 +91,23 @@ export function MemberForm({
   member,
   roles,
   extraRoles,
+  readOnly = false,
 }: {
   member: { id: string; role_id: string; status: string };
   roles: RoleChoice[];
   extraRoles: string[];
+  readOnly?: boolean;
 }) {
   const [state, action, pending] = useActionState(updateMember, {});
   const orderedRoles = [...roles].sort(compareRoleRank);
   return (
-    <form action={action} className="mt-4">
+    <form action={readOnly ? undefined : action} className="mt-4">
       <input type="hidden" name="member" value={member.id} />
       <div className="flex flex-wrap gap-3">
         <select
           aria-label="Primary staff role"
           name="role"
+          disabled={readOnly}
           defaultValue={member.role_id}
           className={selectClass + ' sm:w-48'}
           required
@@ -118,17 +121,18 @@ export function MemberForm({
         <select
           aria-label="Staff access status"
           name="status"
+          disabled={readOnly}
           defaultValue={member.status}
           className={selectClass + ' sm:w-36'}
         >
           <option value="active">Active</option>
           <option value="suspended">Suspended</option>
         </select>
-        <Button size="sm" variant="outline" disabled={pending}>
-          {pending ? 'Saving…' : 'Save access'}
+        <Button size="sm" variant="outline" disabled={pending || readOnly}>
+          {pending ? 'Saving.' : 'Save access'}
         </Button>
       </div>
-      <fieldset className="mt-4 rounded-lg border p-3">
+      <fieldset disabled={readOnly} className="mt-4 rounded-lg border p-3">
         <legend className="px-1 text-xs font-semibold">Additional roles</legend>
         <div className="flex flex-wrap gap-x-5 gap-y-3">
           {orderedRoles.map((role) => (
@@ -144,6 +148,11 @@ export function MemberForm({
           ))}
         </div>
       </fieldset>
+      {readOnly && (
+        <p className="mt-3 text-xs text-muted-foreground">
+          Your current access is shown here. Another authorized manager can change it.
+        </p>
+      )}
       <Feedback state={state} />
     </form>
   );
@@ -227,7 +236,7 @@ export function RoleForm({
         </div>
       </fieldset>
       <Button size="sm" disabled={pending}>
-        {pending ? 'Saving…' : role ? 'Save permissions' : 'Create custom role'}
+        {pending ? 'Saving.' : role ? 'Save permissions' : 'Create custom role'}
       </Button>
       <Feedback state={state} />
     </form>
