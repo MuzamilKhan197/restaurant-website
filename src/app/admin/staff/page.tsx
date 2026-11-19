@@ -173,7 +173,7 @@ export default async function StaffPage() {
                 <div>
                   <p className="break-all text-xs font-medium">{invite.email}</p>
                   <p className="mt-1 text-[11px] text-muted-foreground">
-                    {invitationStatus(invite)} � Expires{' '}
+                    {invitationStatus(invite)} · Expires{' '}
                     {new Date(invite.expires_at).toLocaleString('en-PK', {
                       timeZone: 'Asia/Karachi',
                     })}

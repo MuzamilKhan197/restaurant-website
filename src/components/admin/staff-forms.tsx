@@ -66,13 +66,13 @@ export function InvitationForm({ roles }: { roles: RoleChoice[] }) {
         </div>
       </div>
       <Button size="sm" disabled={pending || !roles.length}>
-        {pending ? 'Creating.' : 'Create invitation link'}
+        {pending ? 'Creating…' : 'Create invitation link'}
       </Button>
       <Feedback state={state} />
       {state.invitationUrl && (
         <div className="rounded-xl border bg-secondary/40 p-4">
           <label htmlFor="invitation-link" className="mb-2 block text-xs font-medium">
-            Private invitation link - copy it now
+            Private invitation link — copy it now
           </label>
           <Input
             id="invitation-link"
@@ -130,7 +130,7 @@ export function MemberForm({
           <option value="suspended">Suspended</option>
         </select>
         <Button size="sm" variant="outline" disabled={pending || readOnly}>
-          {pending ? 'Saving.' : 'Save access'}
+          {pending ? 'Saving…' : 'Save access'}
         </Button>
       </div>
       <fieldset disabled={readOnly} className="mt-4 rounded-lg border p-3">
@@ -176,7 +176,7 @@ export function RemoveStaffForm({ memberId, name }: { memberId: string; name: st
     >
       <input type="hidden" name="member" value={memberId} />
       <Button size="sm" variant="destructive" disabled={pending}>
-        {pending ? 'Removing.' : 'Remove staff'}
+        {pending ? 'Removing…' : 'Remove staff'}
       </Button>
       <Feedback state={state} />
     </form>
@@ -261,7 +261,7 @@ export function RoleForm({
         </div>
       </fieldset>
       <Button size="sm" disabled={pending}>
-        {pending ? 'Saving.' : role ? 'Save permissions' : 'Create custom role'}
+        {pending ? 'Saving…' : role ? 'Save permissions' : 'Create custom role'}
       </Button>
       <Feedback state={state} />
     </form>

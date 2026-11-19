@@ -84,7 +84,7 @@ export async function removeStaffMember(_state: AuthState, form: FormData): Prom
     .maybeSingle();
   if (error?.code === '23503')
     return {
-      error: 'Reassign or unassign this staff member's support tickets before removing them.',
+      error: 'Reassign or unassign their support tickets before removing this staff member.',
     };
   if (error || !data) return { error: 'This staff membership could not be removed.' };
   revalidatePath('/admin', 'layout');
