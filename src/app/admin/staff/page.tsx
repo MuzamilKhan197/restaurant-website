@@ -17,7 +17,7 @@ export default async function StaffPage() {
       .from('staff_memberships')
       .select('id,user_id,display_name,contact_email,role_id,status')
       .eq('restaurant_id', access.restaurant_id)
-      .order('created_at'),
+      .order('display_name'),
     client
       .from('roles')
       .select('id,name,slug,is_system,is_active')
@@ -50,11 +50,15 @@ export default async function StaffPage() {
         (!['roles.manage', 'staff.manage'].includes(grant.permission_key) &&
           access.permissions.includes(grant.permission_key)),
     );
-  const staffRoles = (roles.data || [])
-    .filter(
-      (role) => role.is_active && !['owner', 'customer'].includes(role.slug) && canAssign(role.id),
-    )
-    .sort(compareRoleRank);
+  const rankedRoles = [...(roles.data || [])].sort(compareRoleRank);
+  const staffRoles = rankedRoles.filter(
+    (role) => role.is_active && !['owner', 'customer'].includes(role.slug) && canAssign(role.id),
+  );
+  const rolePositions = new Map(rankedRoles.map((role, index) => [role.id, index]));
+  const rank = (id: string) => rolePositions.get(id) ?? rankedRoles.length;
+  const orderedMembers = [...(members.data || [])].sort(
+    (a, b) => rank(a.role_id) - rank(b.role_id),
+  );
   return (
     <>
       <p className="eyebrow text-[9px]">The people behind the experience</p>
@@ -81,20 +85,21 @@ export default async function StaffPage() {
         <CardHeader>
           <CardTitle className="text-sm">Team members</CardTitle>
           <CardDescription className="text-xs">
-            Suspending access takes effect on the next request.
+            Team members are listed by primary role, highest access first.
           </CardDescription>
         </CardHeader>
         <CardContent className="divide-y">
-          {!members.data?.length && (
+          {!orderedMembers.length && (
             <p className="py-8 text-xs text-muted-foreground">
               No staff memberships yet. The verified owner can be bootstrapped by the project
               operator.
             </p>
           )}
-          {members.data?.map((member) => {
+          {orderedMembers.map((member) => {
             const extraRoles = (assignments.data || [])
               .filter((a) => a.membership_id === member.id)
-              .map((a) => a.role_id);
+              .map((a) => a.role_id)
+              .sort((a, b) => rank(a) - rank(b));
             return (
               <div key={member.id} id={member.id} className="scroll-mt-20 py-5 first:pt-0">
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -121,7 +126,7 @@ export default async function StaffPage() {
                   [member.role_id, ...extraRoles].every(canAssign) &&
                   roles.data?.find((r) => r.id === member.role_id)?.slug !== 'owner' && (
                     <MemberForm
-                      key={JSON.stringify([member.role_id, member.status, extraRoles.sort()])}
+                      key={JSON.stringify([member.role_id, member.status, extraRoles])}
                       member={member}
                       roles={staffRoles}
                       extraRoles={extraRoles}
@@ -149,7 +154,7 @@ export default async function StaffPage() {
                 <div>
                   <p className="break-all text-xs font-medium">{invite.email}</p>
                   <p className="mt-1 text-[11px] text-muted-foreground">
-                    {invitationStatus(invite)} � Expires{' '}
+                    {invitationStatus(invite)} · Expires{' '}
                     {new Date(invite.expires_at).toLocaleString('en-PK', {
                       timeZone: 'Asia/Karachi',
                     })}

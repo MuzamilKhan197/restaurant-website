@@ -4,7 +4,7 @@ import { requireStaff } from '@/features/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 
-export const metadata = { title: 'People' };
+export const metadata = { title: 'People Access' };
 
 export default async function PeoplePage({
   searchParams,
@@ -41,7 +41,7 @@ export default async function PeoplePage({
     '/admin/people?' + new URLSearchParams({ tab, q: query, page: String(value) });
   return (
     <section className="space-y-6">
-      <h1 className="text-3xl font-semibold">People</h1>
+      <h1 className="text-3xl font-semibold">People Access</h1>
       <nav aria-label="People groups" className="flex gap-3">
         {canSeeStaff && (
           <Button asChild size="sm" variant={staff ? 'default' : 'outline'}>

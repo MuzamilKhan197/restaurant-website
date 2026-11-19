@@ -1,0 +1,9 @@
+{
+  "name": "Saffron & Ember",
+  "short_name": "Saffron & Ember",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf8f1",
+  "theme_color": "#263d31",
+  "icons": [{ "src": "/assets/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

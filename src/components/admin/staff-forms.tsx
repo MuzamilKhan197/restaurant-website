@@ -1,4 +1,5 @@
 'use client';
+import { compareRoleRank } from '@/features/auth/permissions';
 import { useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +33,7 @@ function Feedback({ state }: { state: AuthState }) {
 }
 export function InvitationForm({ roles }: { roles: RoleChoice[] }) {
   const [state, action, pending] = useActionState(createInvitation, {});
+  const orderedRoles = [...roles].sort(compareRoleRank);
   return (
     <form action={action} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
@@ -54,7 +56,7 @@ export function InvitationForm({ roles }: { roles: RoleChoice[] }) {
           </label>
           <select id="invite-role" name="role" required className={selectClass}>
             <option value="">Choose a role</option>
-            {roles.map((r) => (
+            {orderedRoles.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.name}
               </option>
@@ -63,13 +65,13 @@ export function InvitationForm({ roles }: { roles: RoleChoice[] }) {
         </div>
       </div>
       <Button size="sm" disabled={pending || !roles.length}>
-        {pending ? 'Creating.' : 'Create invitation link'}
+        {pending ? 'Creating…' : 'Create invitation link'}
       </Button>
       <Feedback state={state} />
       {state.invitationUrl && (
         <div className="rounded-xl border bg-secondary/40 p-4">
           <label htmlFor="invitation-link" className="mb-2 block text-xs font-medium">
-            Private invitation link - copy it now
+            Private invitation link — copy it now
           </label>
           <Input
             id="invitation-link"
@@ -95,6 +97,7 @@ export function MemberForm({
   extraRoles: string[];
 }) {
   const [state, action, pending] = useActionState(updateMember, {});
+  const orderedRoles = [...roles].sort(compareRoleRank);
   return (
     <form action={action} className="mt-4">
       <input type="hidden" name="member" value={member.id} />
@@ -106,7 +109,7 @@ export function MemberForm({
           className={selectClass + ' sm:w-48'}
           required
         >
-          {roles.map((role) => (
+          {orderedRoles.map((role) => (
             <option key={role.id} value={role.id}>
               {role.name}
             </option>
@@ -122,13 +125,13 @@ export function MemberForm({
           <option value="suspended">Suspended</option>
         </select>
         <Button size="sm" variant="outline" disabled={pending}>
-          {pending ? 'Saving.' : 'Save access'}
+          {pending ? 'Saving…' : 'Save access'}
         </Button>
       </div>
       <fieldset className="mt-4 rounded-lg border p-3">
         <legend className="px-1 text-xs font-semibold">Additional roles</legend>
         <div className="flex flex-wrap gap-x-5 gap-y-3">
-          {roles.map((role) => (
+          {orderedRoles.map((role) => (
             <label key={role.id} className="flex items-center gap-2 text-sm">
               <input
                 name="extraRoles"
@@ -224,7 +227,7 @@ export function RoleForm({
         </div>
       </fieldset>
       <Button size="sm" disabled={pending}>
-        {pending ? 'Saving.' : role ? 'Save permissions' : 'Create custom role'}
+        {pending ? 'Saving…' : role ? 'Save permissions' : 'Create custom role'}
       </Button>
       <Feedback state={state} />
     </form>

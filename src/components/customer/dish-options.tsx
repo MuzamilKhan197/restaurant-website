@@ -65,7 +65,7 @@ export function DishOptions({
           <legend className="mb-3 text-sm font-semibold">
             {g.name}{' '}
             <span className="font-normal text-muted-foreground">
-              (choose {g.min_selections}-{g.max_selections})
+              (choose {g.min_selections}–{g.max_selections})
             </span>
           </legend>
           {g.addons.map((a) => (

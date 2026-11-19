@@ -3,7 +3,8 @@ import { Info, Layers } from 'lucide-react';
 import { Brand } from '@/components/shared/brand';
 import { WorkspaceNavigation } from '@/components/admin/workspace-navigation';
 import { WorkspaceHeader } from '@/components/admin/workspace-header';
-import { requireStaff } from '@/features/auth/session';
+import { requireStaff, requireUser } from '@/features/auth/session';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +14,19 @@ export const metadata: Metadata = {
 };
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const access = await requireStaff();
+  const user = await requireUser('/admin');
+  const client = await createClient();
+  const { data: profile } = await client
+    .from('profiles')
+    .select('display_name')
+    .eq('id', user.id)
+    .maybeSingle();
+  const displayName = profile?.display_name.trim() || '';
+  const nameParts = displayName.split(/\s+/);
+  const initials = (
+    (Array.from(nameParts[0])[0] || Array.from(user.email || '')[0] || '?') +
+    (nameParts.length > 1 ? Array.from(nameParts.at(-1) || '')[0] : '')
+  ).toLocaleUpperCase();
   return (
     <div className="admin-theme min-h-screen bg-background font-sans text-foreground">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-slate-800 bg-[#111827] p-5 lg:flex">
@@ -38,7 +52,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </aside>
       <div className="lg:pl-60">
-        <WorkspaceHeader permissions={access.permissions} roleName={access.role_name} />
+        <WorkspaceHeader
+          permissions={access.permissions}
+          roleName={access.role_name}
+          displayName={displayName}
+          initials={initials}
+        />
         <div className="flex items-start gap-2.5 border-b bg-blue-50/80 px-5 py-2.5 text-[11px] leading-5 text-blue-900 sm:px-7">
           <Info className="mt-0.5 size-3.5 shrink-0" />
           <p>

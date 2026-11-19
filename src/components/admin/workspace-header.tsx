@@ -21,9 +21,13 @@ import { visibleModule } from '@/features/auth/permissions';
 export function WorkspaceHeader({
   permissions,
   roleName,
+  displayName,
+  initials,
 }: {
   permissions: readonly string[];
   roleName: string;
+  displayName: string;
+  initials: string;
 }) {
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -152,9 +156,10 @@ export function WorkspaceHeader({
         <span
           className="flex size-8 items-center justify-center rounded-full bg-slate-100 text-[10px] font-semibold text-slate-600"
           role="img"
-          aria-label="Staff account"
+          aria-label={displayName || 'Signed-in staff account'}
+          title={displayName || undefined}
         >
-          SE
+          {initials}
         </span>
         <Button asChild variant="ghost" size="icon" className="hidden xl:inline-flex">
           <Link href="/" aria-label="Open customer website">

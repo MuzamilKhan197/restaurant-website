@@ -63,8 +63,8 @@ export default async function RolesPage() {
               <summary className="cursor-pointer font-medium">
                 {role.name}{' '}
                 <span className="ml-2 text-xs text-muted-foreground">
-                  {role.is_system ? 'Built-in' : 'Custom'} � {allowed.length} allowed actions
-                  {!role.is_active ? ' � Inactive' : ''}
+                  {role.is_system ? 'Built-in' : 'Custom'} · {allowed.length} allowed actions
+                  {!role.is_active ? ' · Inactive' : ''}
                 </span>
               </summary>
               {canManage && !role.is_system && selected.every(canGrant) ? (
