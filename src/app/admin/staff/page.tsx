@@ -1,5 +1,5 @@
 import { invitationStatus } from '@/features/auth/invitation-status';
-import { requireStaff } from '@/features/auth/session';
+import { requireStaff, requireUser } from '@/features/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,8 +8,10 @@ export const metadata = { title: 'Role Assignment' };
 export const dynamic = 'force-dynamic';
 export default async function StaffPage() {
   const access = await requireStaff('staff.read');
+  const user = await requireUser('/admin/staff');
+  const canManage = access.permissions.includes('staff.manage');
   const client = await createClient();
-  const [members, roles, invitations, assignments] = await Promise.all([
+  const [members, roles, invitations, assignments, grants] = await Promise.all([
     client
       .from('staff_memberships')
       .select('id,user_id,display_name,contact_email,role_id,status')
@@ -20,7 +22,7 @@ export default async function StaffPage() {
       .select('id,name,slug,is_system,is_active')
       .eq('restaurant_id', access.restaurant_id)
       .order('created_at'),
-    access.is_owner
+    canManage
       ? client
           .from('staff_invitations')
           .select('id,email,role_id,expires_at,accepted_at,revoked_at')
@@ -32,21 +34,33 @@ export default async function StaffPage() {
       .from('staff_additional_roles')
       .select('membership_id,role_id')
       .eq('restaurant_id', access.restaurant_id),
+    client
+      .from('role_permissions')
+      .select('role_id,permission_key')
+      .eq('restaurant_id', access.restaurant_id),
   ]);
-  if ([members, roles, invitations, assignments].some((result) => result.error))
+  if ([members, roles, invitations, assignments, grants].some((result) => result.error))
     throw new Error('Unable to load team access. Please retry.');
+  const canAssign = (roleId: string) =>
+    access.is_owner ||
+    (grants.data || []).every(
+      (grant) =>
+        grant.role_id !== roleId ||
+        (!['roles.manage', 'staff.manage'].includes(grant.permission_key) &&
+          access.permissions.includes(grant.permission_key)),
+    );
   const staffRoles = (roles.data || []).filter(
-    (role) => role.is_active && !['owner', 'customer'].includes(role.slug),
+    (role) => role.is_active && !['owner', 'customer'].includes(role.slug) && canAssign(role.id),
   );
   return (
     <>
       <p className="eyebrow text-[9px]">The people behind the experience</p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight">Role Assignment</h1>
       <p className="mt-3 max-w-2xl text-xs leading-6 text-muted-foreground">
-        Active roles control access in the backend and database. Only the restaurant owner can
-        invite staff or change permissions.
+        Staff with Role Assignment access can invite teammates and assign roles within their
+        permissions.
       </p>
-      {access.is_owner && (
+      {canManage && (
         <Card className="mt-7">
           <CardHeader>
             <CardTitle className="text-sm">Invite a teammate</CardTitle>
@@ -99,7 +113,9 @@ export default async function StaffPage() {
                     <Badge variant="outline">{member.status}</Badge>
                   </div>
                 </div>
-                {access.is_owner &&
+                {canManage &&
+                  member.user_id !== user.id &&
+                  [member.role_id, ...extraRoles].every(canAssign) &&
                   roles.data?.find((r) => r.id === member.role_id)?.slug !== 'owner' && (
                     <MemberForm
                       key={JSON.stringify([member.role_id, member.status, extraRoles.sort()])}
@@ -113,7 +129,7 @@ export default async function StaffPage() {
           })}
         </CardContent>
       </Card>
-      {access.is_owner && (
+      {canManage && (
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="text-sm">Recent invitations</CardTitle>
@@ -130,7 +146,7 @@ export default async function StaffPage() {
                 <div>
                   <p className="break-all text-xs font-medium">{invite.email}</p>
                   <p className="mt-1 text-[11px] text-muted-foreground">
-                    {invitationStatus(invite)} · Expires{' '}
+                    {invitationStatus(invite)} � Expires{' '}
                     {new Date(invite.expires_at).toLocaleString('en-PK', {
                       timeZone: 'Asia/Karachi',
                     })}

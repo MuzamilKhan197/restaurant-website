@@ -1413,6 +1413,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      delete_custom_role: { Args: { p_restaurant: string; p_role: string }; Returns: undefined };
       save_custom_role: {
         Args: {
           p_restaurant: string;

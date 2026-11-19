@@ -31,26 +31,40 @@ const invite = async () =>
   );
 let awaitedRole;
 test('additional roles combine permissions and are removed or suspended atomically', async () => {
-  const member = await scalar('select id from public.staff_memberships where restaurant_id=$1 and user_id=$2', [R, SUPPORT]);
+  const member = await scalar(
+    'select id from public.staff_memberships where restaurant_id=$1 and user_id=$2',
+    [R, SUPPORT],
+  );
   const primary = await role('support-agent');
   const developer = await role('developer');
   const ownerRole = await role('owner');
-  const setRoles = (actor, extras, status = 'active') => user(actor, () =>
-    query('select public.set_staff_roles($1,$2,$3,$4,$5)', [R, member, primary, extras, status]),
-  );
+  const setRoles = (actor, extras, status = 'active') =>
+    user(actor, () =>
+      query('select public.set_staff_roles($1,$2,$3,$4,$5)', [R, member, primary, extras, status]),
+    );
   const access = () => user(SUPPORT, () => scalar('select public.current_staff_access($1)', [R]));
-  await assert.rejects(setRoles(SUPPORT, [developer]), /Owner access required/);
+  await assert.rejects(setRoles(SUPPORT, [developer]), /Management permission required/);
   await assert.rejects(setRoles(OWNER, [ownerRole]), /Invalid additional staff roles/);
-  await assert.rejects(setRoles(OWNER, [await scalar("select id from public.roles where restaurant_id=$1 and slug='developer'",[R2])]), /Invalid additional staff roles/);
+  await assert.rejects(
+    setRoles(OWNER, [
+      await scalar("select id from public.roles where restaurant_id=$1 and slug='developer'", [R2]),
+    ]),
+    /Invalid additional staff roles/,
+  );
   await setRoles(OWNER, [developer, developer]);
   const combined = await access();
   assert.ok(combined.permissions.includes('support.read'));
   assert.ok(combined.permissions.includes('website.manage'));
   assert.ok(!combined.permissions.includes('staff.manage'));
-  assert.equal(await scalar('select count(*)::int from public.staff_additional_roles where membership_id=$1',[member]),1);
-  await setRoles(OWNER,[developer],'suspended');
-  assert.equal(await access(),null);
-  await setRoles(OWNER,[]);
+  assert.equal(
+    await scalar('select count(*)::int from public.staff_additional_roles where membership_id=$1', [
+      member,
+    ]),
+    1,
+  );
+  await setRoles(OWNER, [developer], 'suspended');
+  assert.equal(await access(), null);
+  await setRoles(OWNER, []);
   assert.ok(!(await access()).permissions.includes('website.manage'));
 });
 before(async () => {
@@ -123,7 +137,7 @@ test('only the restaurant owner can create invitations', async () => {
         HASH,
       ]),
     ),
-    /Owner access/,
+    /Management permission required/,
   );
   await assert.rejects(
     user(OWNER2, () =>
@@ -134,7 +148,7 @@ test('only the restaurant owner can create invitations', async () => {
         HASH,
       ]),
     ),
-    /Owner access/,
+    /Management permission required/,
   );
   await assert.rejects(
     asUser(db, null, () => scalar('select public.current_staff_access($1)', [R]), 'anon'),
@@ -272,16 +286,80 @@ test('custom roles update permissions atomically and cannot edit presets', async
         R,
       ]),
     ),
-    /Owner access/,
+    /Management permission required/,
+  );
+});
+test('owner can delegate management and the delegate stays within their grants', async () => {
+  const save = (actor, id, slug, permissions) =>
+    user(actor, () =>
+      scalar('select public.save_custom_role($1,$2,$3,$3,$4)', [R, id, slug, permissions]),
+    );
+  const delegated = await save(OWNER, null, 'team-lead', [
+    'staff.manage',
+    'roles.manage',
+    'support.read',
+  ]);
+  const member = id('d', 1);
+  await user(OWNER, () =>
+    query("select public.set_staff_roles($1,$2,$3,'{}','active')", [R, member, delegated]),
+  );
+  const access = await user(SUPPORT, () => scalar('select public.current_staff_access($1)', [R]));
+  assert.ok(access.permissions.includes('staff.manage'));
+  assert.ok(access.permissions.includes('roles.manage'));
+  assert.ok(access.permissions.includes('staff.read'));
+  assert.ok(access.permissions.includes('roles.read'));
+  const permitted = await save(SUPPORT, null, 'tickets-reader', ['support.read']);
+  await assert.rejects(save(SUPPORT, null, 'excess', ['menu.manage']), /exceeds your access/);
+  await assert.rejects(save(SUPPORT, null, 'excess', ['staff.manage']), /exceeds your access/);
+  await assert.rejects(
+    save(SUPPORT, delegated, 'team-lead', ['support.read']),
+    /exceeds your access/,
   );
   await assert.rejects(
-    user(OWNER, () =>
-      scalar(
-        "select public.save_custom_role($1,null,'Escalate','escalate',array['roles.manage'])",
-        [R],
-      ),
+    user(SUPPORT, () =>
+      query("select public.set_staff_roles($1,$2,$3,'{}','active')", [R, member, permitted]),
     ),
-    /Invalid permission/,
+    /Staff member unavailable/,
+  );
+  const manager = await role('manager');
+  const inviteAsDelegate = (roleId) =>
+    user(SUPPORT, () =>
+      scalar('select public.create_staff_invitation($1,$2,$3,$4)', [
+        R,
+        'user7@example.com',
+        roleId,
+        HASH,
+      ]),
+    );
+  await assert.rejects(inviteAsDelegate(manager), /exceeds your access/);
+  const invitation = await inviteAsDelegate(permitted);
+  assert.equal(
+    await user(SUPPORT, () =>
+      scalar('select id from public.staff_invitations where id=$1', [invitation]),
+    ),
+    invitation,
+  );
+  await user(OUTSIDER, () => scalar('select public.accept_staff_invitation($1)', [TOKEN]));
+  const outsiderMember = await scalar(
+    'select id from public.staff_memberships where restaurant_id=$1 and user_id=$2',
+    [R, OUTSIDER],
+  );
+  await user(SUPPORT, () =>
+    query("select public.set_staff_roles($1,$2,$3,'{}','suspended')", [
+      R,
+      outsiderMember,
+      permitted,
+    ]),
+  );
+  assert.equal(
+    await scalar('select status from public.staff_memberships where id=$1', [outsiderMember]),
+    'suspended',
+  );
+  const disposable = await save(SUPPORT, null, 'disposable', []);
+  await user(SUPPORT, () => query('select public.delete_custom_role($1,$2)', [R, disposable]));
+  await assert.rejects(
+    user(SUPPORT, () => query('select public.delete_custom_role($1,$2)', [R, delegated])),
+    /exceeds your access/,
   );
 });
 test('staff changes are owner-only, tenant-scoped and protect the owner identity', async () => {

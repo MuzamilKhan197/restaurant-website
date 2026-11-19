@@ -15,6 +15,10 @@ const roleRank = new Map([
 
 export default async function RolesPage() {
   const access = await requireStaff('roles.read');
+  const canManage = access.permissions.includes('roles.manage');
+  const canGrant = (key: string) =>
+    access.is_owner ||
+    (!['roles.manage', 'staff.manage'].includes(key) && access.permissions.includes(key));
   const client = await createClient();
   const [roles, permissions, grants] = await Promise.all([
     client
@@ -30,6 +34,7 @@ export default async function RolesPage() {
   ]);
   if (roles.error || permissions.error || grants.error)
     throw new Error('Unable to load roles and permissions.');
+  const grantable = permissions.data.filter(({ key }) => canGrant(key));
   const orderedRoles = [...roles.data].sort(
     (a, b) =>
       (roleRank.get(a.slug) ?? 5) - (roleRank.get(b.slug) ?? 5) || a.name.localeCompare(b.name),
@@ -39,12 +44,13 @@ export default async function RolesPage() {
     <section className="space-y-6">
       <h1 className="text-3xl font-semibold">Roles &amp; Permissions</h1>
       <p className="text-sm text-muted-foreground">
-        Choose a role to see its allowed actions. Owners can create and edit custom roles.
+        Choose a role to see its allowed actions. Staff with Manage Roles access can edit custom
+        roles within their permissions.
       </p>
-      {access.is_owner && (
+      {canManage && (
         <details className="rounded-xl border bg-card p-5">
           <summary className="cursor-pointer font-semibold">Create a custom role</summary>
-          <RoleForm permissions={permissions.data} />
+          <RoleForm permissions={grantable} />
         </details>
       )}
       <div className="space-y-3">
@@ -61,16 +67,16 @@ export default async function RolesPage() {
               <summary className="cursor-pointer font-medium">
                 {role.name}{' '}
                 <span className="ml-2 text-xs text-muted-foreground">
-                  {role.is_system ? 'Built-in' : 'Custom'} · {allowed.length} allowed actions
-                  {!role.is_active ? ' · Inactive' : ''}
+                  {role.is_system ? 'Built-in' : 'Custom'} � {allowed.length} allowed actions
+                  {!role.is_active ? ' � Inactive' : ''}
                 </span>
               </summary>
-              {access.is_owner && !role.is_system ? (
+              {canManage && !role.is_system && selected.every(canGrant) ? (
                 <>
                   <RoleForm
                     key={selected.join(',')}
                     role={role}
-                    permissions={permissions.data}
+                    permissions={grantable}
                     selected={selected}
                   />
                   <DeleteRoleForm id={role.id} />

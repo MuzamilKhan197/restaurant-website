@@ -63,13 +63,13 @@ export function InvitationForm({ roles }: { roles: RoleChoice[] }) {
         </div>
       </div>
       <Button size="sm" disabled={pending || !roles.length}>
-        {pending ? 'Creating…' : 'Create invitation link'}
+        {pending ? 'Creating.' : 'Create invitation link'}
       </Button>
       <Feedback state={state} />
       {state.invitationUrl && (
         <div className="rounded-xl border bg-secondary/40 p-4">
           <label htmlFor="invitation-link" className="mb-2 block text-xs font-medium">
-            Private invitation link — copy it now
+            Private invitation link - copy it now
           </label>
           <Input
             id="invitation-link"
@@ -122,7 +122,7 @@ export function MemberForm({
           <option value="suspended">Suspended</option>
         </select>
         <Button size="sm" variant="outline" disabled={pending}>
-          {pending ? 'Saving…' : 'Save access'}
+          {pending ? 'Saving.' : 'Save access'}
         </Button>
       </div>
       <fieldset className="mt-4 rounded-lg border p-3">
@@ -205,7 +205,6 @@ export function RoleForm({
         <legend className="mb-3 text-xs font-medium">Allowed actions</legend>
         <div className="grid gap-3 sm:grid-cols-2">
           {permissions.map((p) => {
-            const ownerOnly = p.key === 'staff.manage' || p.key === 'roles.manage';
             return (
               <label key={p.key} className="flex items-start gap-2 text-[11px] leading-5">
                 <input
@@ -213,7 +212,6 @@ export function RoleForm({
                   name="permissions"
                   value={p.key}
                   defaultChecked={selected.includes(p.key)}
-                  disabled={ownerOnly}
                   className="mt-1 accent-blue-600"
                 />
                 <span>
@@ -226,7 +224,7 @@ export function RoleForm({
         </div>
       </fieldset>
       <Button size="sm" disabled={pending}>
-        {pending ? 'Saving…' : role ? 'Save permissions' : 'Create custom role'}
+        {pending ? 'Saving.' : role ? 'Save permissions' : 'Create custom role'}
       </Button>
       <Feedback state={state} />
     </form>

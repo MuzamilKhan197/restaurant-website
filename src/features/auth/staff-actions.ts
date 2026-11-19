@@ -95,14 +95,11 @@ export async function deleteRole(_state: AuthState, form: FormData): Promise<Aut
   const id = z.uuid().safeParse(form.get('id'));
   if (!id.success) return { error: 'Invalid role.' };
   const client = await createClient();
-  const { error, data } = await client
-    .from('roles')
-    .delete()
-    .eq('restaurant_id', access.restaurant_id)
-    .eq('id', id.data)
-    .eq('is_system', false)
-    .select('id');
-  if (error || data?.length !== 1)
+  const { error } = await client.rpc('delete_custom_role', {
+    p_restaurant: access.restaurant_id,
+    p_role: id.data,
+  });
+  if (error)
     return {
       error: 'Role could not be deleted. Reassign members and revoke its invitations first.',
     };

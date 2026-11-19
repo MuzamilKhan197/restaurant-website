@@ -83,6 +83,7 @@ try {
     revoke_staff_invitation: {Args:{p_restaurant:string;p_invitation:string};Returns:undefined};
     manage_staff_member: {Args:{p_restaurant:string;p_member:string;p_role:string;p_status:Database['public']['Enums']['membership_status']};Returns:undefined};
     set_staff_roles: {Args:{p_restaurant:string;p_member:string;p_role:string;p_extra_roles:string[];p_status:Database['public']['Enums']['membership_status']};Returns:undefined};
+    delete_custom_role: {Args:{p_restaurant:string;p_role:string};Returns:undefined};
     save_custom_role: {Args:{p_restaurant:string;p_role:string|null;p_name:string;p_slug:string;p_permissions:string[]};Returns:string};
     bootstrap_restaurant_owner: {Args:{p_restaurant:string;p_owner:string};Returns:undefined};
     save_menu_variant: {Args:{p_restaurant:string;p_product:string;p_variant:string|null;p_name:string;p_price:number;p_active:boolean;p_default:boolean;p_sort:number};Returns:string};

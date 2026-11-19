@@ -1319,6 +1319,10 @@ export type Database = {
         Returns: Json
       }
       current_staff_access: { Args: { p_restaurant: string }; Returns: Json }
+      delete_custom_role: {
+        Args: { p_restaurant: string; p_role: string }
+        Returns: undefined
+      }
       manage_staff_member: {
         Args: {
           p_member: string
