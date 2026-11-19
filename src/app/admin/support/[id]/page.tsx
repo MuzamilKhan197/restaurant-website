@@ -48,7 +48,7 @@ export default async function AdminTicket({ params }: { params: Promise<{ id: st
         </div>
         <aside className="space-y-5">
           <div className="space-y-3 rounded-xl border bg-card p-5">
-            <h2 className="font-semibold">Customer</h2>
+            <h2 className="font-semibold">Opened by</h2>
             <p className="text-sm">{ticket.contact_name}</p>
             <p className="break-all text-sm">{ticket.contact_email}</p>
             {ticket.order_id && access.permissions.includes('orders.read') && (

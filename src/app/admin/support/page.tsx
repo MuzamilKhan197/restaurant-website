@@ -7,13 +7,16 @@ export const metadata = { title: 'Support inbox' };
 export default async function SupportInbox({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | undefined>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const access = await requireStaff('support.read'),
     client = await createClient(),
     params = await searchParams,
-    page = Math.max(1, Math.min(10000, Number.parseInt(params.page || '1', 10) || 1)),
-    query = (params.q || '').trim().slice(0, 100);
+    page = Math.max(
+      1,
+      Math.min(10000, Number.parseInt(typeof params.page === 'string' ? params.page : '1', 10) || 1),
+    ),
+    query = typeof params.q === 'string' ? params.q.trim().slice(0, 100) : '';
   const status = z.enum(statuses).safeParse(params.status),
     priority = z.enum(priorities).safeParse(params.priority),
     assigned = z.uuid().safeParse(params.assigned);
@@ -26,7 +29,7 @@ export default async function SupportInbox({
   if (assignees?.error || !choices.success) throw new Error('Unable to load support assignments.');
   let request = client
     .from('support_tickets')
-    .select('id,reference,subject,status,priority,assigned_to,updated_at,category', {
+    .select('id,reference,subject,contact_name,status,priority,assigned_to,updated_at', {
       count: 'exact',
     })
     .eq('restaurant_id', access.restaurant_id)
@@ -37,7 +40,15 @@ export default async function SupportInbox({
   if (priority.success) request = request.eq('priority', priority.data);
   if (assigned.success) request = request.eq('assigned_to', assigned.data);
   else if (params.assigned === 'unassigned') request = request.is('assigned_to', null);
-  if (query) request = request.ilike('subject', '%' + query.replace(/[\\%_]/g, '\\$&') + '%');
+  if (query) {
+    // Quote PostgREST values so punctuation stays inside the search term.
+    const pattern = JSON.stringify('%' + query.replace(/[\\%_]/g, (char) => '\\' + char) + '%');
+    request = request.or(
+      ['reference', 'contact_name', 'subject']
+        .map((column) => column + '.ilike.' + pattern)
+        .join(','),
+    );
+  }
   const result = await request;
   if (result.error) throw new Error('Unable to load support tickets.');
   const href = (p: number) =>
@@ -61,7 +72,7 @@ export default async function SupportInbox({
       </p>
       <form className="my-6 flex flex-wrap items-end gap-3">
         <label className="text-xs">
-          Search subject
+          Search ticket number, name or subject
           <input
             name="q"
             defaultValue={query}
@@ -93,7 +104,7 @@ export default async function SupportInbox({
           Assignment
           <select
             name="assigned"
-            defaultValue={params.assigned || ''}
+            defaultValue={typeof params.assigned === 'string' ? params.assigned : ''}
             className="mt-2 block rounded-lg border bg-card p-3"
           >
             <option value="">All assignments</option>
@@ -117,7 +128,7 @@ export default async function SupportInbox({
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b">
-              {['Ticket', 'Status', 'Priority', 'Assignment', 'Updated'].map((h) => (
+              {['Ticket', 'Opened by', 'Status', 'Priority', 'Assignment', 'Updated'].map((h) => (
                 <th className="p-4" key={h}>
                   {h}
                 </th>
@@ -134,6 +145,7 @@ export default async function SupportInbox({
                     </Link>
                     <p className="mt-2 text-xs text-muted-foreground">{t.reference}</p>
                   </td>
+                  <td className="p-4">{t.contact_name}</td>
                   <td className="p-4 capitalize">{t.status.replaceAll('_', ' ')}</td>
                   <td
                     className={
@@ -154,7 +166,7 @@ export default async function SupportInbox({
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                <td colSpan={6} className="p-8 text-center text-muted-foreground">
                   No tickets match these filters.
                 </td>
               </tr>

@@ -58,7 +58,7 @@ test('navigation only exposes modules allowed by current permissions', () => {
   assert.ok(visibleModule('menu', ['menu.manage']));
   assert.ok(visibleModule('people', ['people.read', 'customers.read']));
   assert.ok(!visibleModule('people', ['people.read']));
-  assert.ok(!visibleModule('people', ['customers.read']));
+  assert.ok(visibleModule('people', ['customers.read']));
   assert.ok(visibleModule('roles', ['roles.read']));
   assert.ok(!visibleModule('staff', ['roles.read']));
 });

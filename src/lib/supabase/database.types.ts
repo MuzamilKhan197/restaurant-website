@@ -1394,6 +1394,16 @@ export type Database = {
         Args: { p_kind: string; p_reference: string; p_token: string };
         Returns: { resource_id: string; restaurant_id: string }[];
       };
+      list_people_profiles: {
+        Args: { p_restaurant: string; p_query: string };
+        Returns: {
+          id: string;
+          display_name: string;
+          email: string | null;
+          staff_id: string | null;
+          customer_id: string | null;
+        }[];
+      };
       current_staff_access: { Args: { p_restaurant: string }; Returns: Json };
       create_staff_invitation: {
         Args: { p_restaurant: string; p_email: string; p_role: string; p_token_hash: string };

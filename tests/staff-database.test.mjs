@@ -484,3 +484,14 @@ test('staff membership removal is owner-only and keeps the Auth account', async 
   assert.equal((await remove(OWNER, SUPPORT)).rows.length, 1);
   assert.equal(await scalar('select exists(select 1 from auth.users where id=$1)', [SUPPORT]), true);
 });
+
+test('all profiles requires executive access and scopes multi-restaurant results', async () => {
+  const list = (actor, tenant, search = '') =>
+    user(actor, () => query('select id, staff_id from public.list_people_profiles($1,$2)', [tenant, search]));
+  await assert.rejects(list(SUPPORT, R), /Profile directory access required/);
+  await assert.rejects(list(OWNER, R2), /Profile directory access required/);
+  const result = await list(OWNER, R, 'USER3@EXAMPLE.COM');
+  assert.deepEqual(result.rows.map(({ id }) => id), [SUPPORT]);
+  assert.ok(result.rows[0].staff_id);
+  assert.equal((await list(OWNER, R, 'user7@example.com')).rows.length, 0);
+});

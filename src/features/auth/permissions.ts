@@ -14,10 +14,8 @@ export function visibleModule(slug: string, permissions: readonly string[]) {
   return (
     permissions.includes(modulePermissions[slug]) ||
     (slug === 'people' &&
-      permissions.includes('people.read') &&
-      permissions.some(
-        (permission) => permission === 'staff.read' || permission === 'customers.read',
-      )) ||
+      (permissions.includes('customers.read') ||
+        (permissions.includes('people.read') && permissions.includes('staff.read')))) ||
     (slug === 'menu' && permissions.includes('menu.manage')) ||
     (slug === 'settings' && permissions.includes('settings.manage'))
   );

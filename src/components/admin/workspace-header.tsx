@@ -35,11 +35,13 @@ export function WorkspaceHeader({
   const pathname = usePathname();
   const current =
     adminModules.find((module) => pathname === `/admin/${module.slug}`)?.title ||
-    (pathname === '/admin/design-system'
-      ? 'Design system'
-      : pathname === '/admin/database'
-        ? 'Database setup'
-        : 'Overview');
+    (pathname.startsWith('/admin/customers/')
+      ? 'Customer details'
+      : pathname === '/admin/design-system'
+        ? 'Design system'
+        : pathname === '/admin/database'
+          ? 'Database setup'
+          : 'Overview');
   const options = [
     { href: '/admin', title: 'Overview', description: 'Foundation setup and project roadmap' },
     {

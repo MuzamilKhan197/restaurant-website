@@ -80,7 +80,7 @@ export const adminModules = [
   {
     slug: 'people',
     title: 'People Access',
-    description: 'Browse staff members and registered customers.',
+    description: 'Find account profiles, staff members and registered customers.',
     phase: 3,
     icon: 'customers',
   },
@@ -97,13 +97,6 @@ export const adminModules = [
     description: 'Manage categories, dishes, prices, variants and add-ons.',
     phase: 4,
     icon: 'menu',
-  },
-  {
-    slug: 'customers',
-    title: 'Customers',
-    description: 'Find customer profiles and their relevant order history.',
-    phase: 5,
-    icon: 'customers',
   },
   {
     slug: 'staff',

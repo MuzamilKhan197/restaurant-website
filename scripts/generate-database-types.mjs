@@ -77,6 +77,7 @@ try {
     save_customer_profile: {Args:{p_restaurant:string;p_name:string;p_phone:string};Returns:string|null};
     save_customer_address: {Args:{p_restaurant:string;p_address:string|null;p_label:string;p_line:string;p_area:string;p_city:string;p_instructions:string;p_default:boolean};Returns:string};
     resolve_guest_access: { Args: {p_kind: string; p_reference: string; p_token: string}; Returns: {resource_id: string; restaurant_id: string}[] };
+    list_people_profiles: { Args: {p_restaurant:string;p_query:string}; Returns: {id:string;display_name:string;email:string|null;staff_id:string|null;customer_id:string|null}[] };
     current_staff_access: { Args: {p_restaurant:string}; Returns: Json };
     create_staff_invitation: { Args: {p_restaurant:string;p_email:string;p_role:string;p_token_hash:string}; Returns:string };
     accept_staff_invitation: {Args:{p_token:string};Returns:string};
