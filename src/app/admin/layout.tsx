@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Info, Layers } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { Brand } from '@/components/shared/brand';
 import { WorkspaceNavigation } from '@/components/admin/workspace-navigation';
 import { WorkspaceHeader } from '@/components/admin/workspace-header';
@@ -36,17 +36,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="workspace-scroll min-h-0 flex-1 overflow-y-auto">
           <WorkspaceNavigation permissions={access.permissions} />
         </div>
-        <div className="mt-7 rounded-lg border border-white/10 bg-white/[.035] p-3.5">
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-200">
-            <Layers className="size-4 text-blue-300" />
-            Phase 8 - Reports
-          </div>
-          <p className="mt-2 text-[10px] leading-5 text-slate-400">
-            One connected platform.
-            <br />
-            Built one tested phase at a time.
-          </p>
-        </div>
         <div className="mt-5 px-2 text-[9px] text-slate-500">
           Saffron &amp; Ember · Sample restaurant
         </div>
@@ -60,10 +49,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         />
         <div className="flex items-start gap-2.5 border-b bg-blue-50/80 px-5 py-2.5 text-[11px] leading-5 text-blue-900 sm:px-7">
           <Info className="mt-0.5 size-3.5 shrink-0" />
-          <p>
-            Signed in as {access.role_name}. Your restaurant role controls access. Operational
-            modules are being developed in the next phases.
-          </p>
+          <p>Signed in as {access.role_name}. Your restaurant role controls access.</p>
         </div>
         <main
           id="main-content"
@@ -74,7 +60,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </main>
         <footer className="mx-5 flex flex-wrap justify-between gap-2 border-t py-5 text-[10px] text-muted-foreground sm:mx-7 lg:mx-9">
           <span>Restaurant management, thoughtfully connected.</span>
-          <span>Version 1 foundation · No live operations</span>
+          <span>Restaurant workspace · V1</span>
         </footer>
       </div>
     </div>

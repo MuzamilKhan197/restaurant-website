@@ -1,9 +1,9 @@
-# Version 1 release candidate
+# Version 1 deployment and acceptance
 
-The application uses the Next.js preset from the root of a private GitHub
-repository. Import that repository into the intended Vercel team and select
-Node.js 24. The included GitHub workflow runs lint, types, tests, a fixture
-restore drill and a production build. Run the workflow on the final release commit.
+[Production](https://restaurant-website-two-indol.vercel.app) runs on Vercel
+from the [GitHub repository](https://github.com/MuzamilKhan197/restaurant-website)
+`main` branch. The GitHub verification workflow checks lint, types, tests, a
+local fixture restore and a production build.
 
 | Environment variable | Value |
 | --- | --- |
@@ -20,9 +20,9 @@ Use Supabase Auth URL Configuration to set the production Site URL and allow
 the exact APP_URL/auth/callback and APP_URL/auth/callback?next=/reset-password
 URLs. Use the verified sender configuration for live email acceptance.
 
-## Acceptance
+## Outstanding acceptance checks
 
-- Run npm run test:auth:http -- https://your-deployment.example and confirm
+- Run npm run test:auth:http -- https://restaurant-website-two-indol.vercel.app and confirm
   protected pages redirect to login and /api/health reports schema version 9.
 - In staging verify registration, confirmation, sign-in, recovery and staff
   invitation acceptance using controlled accounts.
@@ -35,7 +35,7 @@ URLs. Use the verified sender configuration for live email acceptance.
 - Check small and wide viewports and keyboard navigation for menu, checkout,
   order tracking, reports, ticket replies and the website mode controls.
 - Check Normal, Orders Paused and Maintenance before production publication.
-  The production storefront is currently unpublished and orders are paused.
+  Confirm the intended publication and order mode in Website Controls.
 
 ## Backup and rollback
 
@@ -56,7 +56,7 @@ schema. Assess data recovery independently before any database restore.
 
 ## Release evidence
 
-168 automated tests passed. The local PostgreSQL fixture backup restored
-successfully. The workspace has no GitHub remote or authenticated Vercel
-deployment connection. The runner rejected loopback HTTP connections with
-EACCES, so browser workflow and hosted application acceptance are pending.
+Vercel production is live and connected to Supabase. Automated tests and the
+local fixture restore have been exercised. Final signed-in customer and staff
+acceptance, responsive accessibility and a hosted database/Auth/Storage recovery
+drill are still pending.

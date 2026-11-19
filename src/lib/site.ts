@@ -60,19 +60,19 @@ export const developmentPhases = [
     number: 8,
     title: 'Reports & insights',
     summary: 'Actual sales, popular products, customer history and audit logs.',
-    status: 'current',
+    status: 'complete',
   },
   {
     number: 9,
     title: 'Website controls',
     summary: 'Normal, orders paused and maintenance modes.',
-    status: 'planned',
+    status: 'complete',
   },
   {
     number: 10,
     title: 'Release verification',
-    summary: 'Permission tests, responsive checks, release documentation and deployment.',
-    status: 'planned',
+    summary: 'Production deployment is live. Final browser acceptance and hosted recovery checks are pending.',
+    status: 'current',
   },
 ] as const;
 

@@ -1,8 +1,8 @@
 # Restaurant platform implementation roadmap
 
 The approved scope is the user's complete Restaurant Management & Online Ordering
-System specification. Work is deliberately phased; this is not a claim that the
-entire system is complete.
+System specification. Phases 1–9 are implemented and V1 is deployed. Phase 10 tracks final
+operational acceptance and hosted recovery verification.
 
 ## Phase 1 — Foundation and design system
 
@@ -16,12 +16,6 @@ entire system is complete.
 - Honest loading, empty, disabled, error and not-found states.
 - Lint, type checking, menu/configuration tests and a production build.
 - Preserve the previous local application and SQLite records separately.
-
-**No Supabase connection, authentication, real ordering, live dashboard metrics,
-RBAC or RLS is claimed in this phase.** Workspace pages are publicly accessible
-design/foundation pages containing no customer records. Upcoming sections are
-explicitly marked with their implementation phase. Do not add real records to
-these pages before the appropriate server authentication and policies exist.
 
 ## Phase 2 — Database and security
 
@@ -117,8 +111,8 @@ time. Staff must still be able to manage existing operations securely.
 
 End-to-end customer/staff flows, RLS and permissions, private attachments, guest
 tracking, Realtime isolation, responsive accessibility checks, backup/restore and
-release documentation. Connect the user's GitHub repository and Vercel project
-when their accounts and deployment configuration are available.
+release documentation. GitHub and Vercel are connected and production is live.
+Outstanding checks are listed in the [release runbook](RELEASE.md).
 
 ## Deferred versions
 

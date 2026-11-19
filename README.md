@@ -1,38 +1,27 @@
 # Saffron & Ember — Restaurant Platform
 
-A phased migration to **one Next.js App Router application** for the customer
-website and restaurant management dashboard. The approved scope and implementation
+The customer website and restaurant workspace share **one Next.js App Router application**. The approved scope and implementation
 sequence are recorded in [docs/ROADMAP.md](docs/ROADMAP.md).
 
-## Current stage: Phase 9 - Website controls
+## V1 status
 
-The user-created Supabase restaurant project is connected and thirteen reviewed
-migrations are applied. Registration, sign-in, password recovery, verified
-sessions, protected workspace routes, employee invitations and custom roles are
-implemented. See [AUTHENTICATION.md](docs/AUTHENTICATION.md) for Auth redirect
-configuration and verified owner bootstrap, and [DATABASE.md](docs/DATABASE.md)
-for the data model.
+The [production site](https://restaurant-website-two-indol.vercel.app) is deployed
+on Vercel from GitHub `main` and connected to Supabase. V1 features are implemented.
+Final signed-in browser acceptance, responsive accessibility checks and hosted
+recovery verification are tracked in the [release runbook](docs/RELEASE.md).
 
-The designated owner is verified and active, and local Auth callbacks are saved.
-Menu staff can now manage categories, dishes, private photographs, variants and
-reusable add-ons at `/admin/menu`. See [MENU_MANAGEMENT.md](docs/MENU_MANAGEMENT.md).
-The hosted schema is v9. The storefront reads actual published menu records;
-profiles, addresses, private order history and staff customer management are
-connected. Guest/account cash checkout, server pricing, duplicate protection,
-private tracking and staff order/payment tools are implemented. See
-[customer experience](docs/CUSTOMER_EXPERIENCE.md) and
-[checkout and orders](docs/CHECKOUT_AND_ORDERS.md).
-Private support tickets, conversations, internal notes, assignments, resolution
-and private attachments are implemented. See [support system](docs/SUPPORT_SYSTEM.md).
-Live dashboard metrics, sales/cash reports, interactive charts, popular dishes,
-CSV downloads and activity logs are implemented. See
-[reports and activity](docs/REPORTS_AND_ACTIVITY.md).
-Restaurant settings and website controls are available in the workspace.
-The [release runbook](docs/RELEASE.md) records deployment configuration,
-acceptance checks and backup recovery. The application is a release candidate
-pending hosted deployment and browser acceptance.
-The restaurant stays unpublished with ordering paused. The legacy application
-is preserved.
+- [Authentication and roles](docs/AUTHENTICATION.md) cover verified accounts,
+  staff invitations and permission-scoped workspace access.
+- [Menu management](docs/MENU_MANAGEMENT.md), [customer accounts](docs/CUSTOMER_EXPERIENCE.md)
+  and [checkout and orders](docs/CHECKOUT_AND_ORDERS.md) cover catalogue updates,
+  saved addresses, guest and account checkout, and staff order workflows.
+- People Access groups account profiles, staff and customers. Customer details
+  show order and ticket history according to permissions.
+- The [support inbox](docs/SUPPORT_SYSTEM.md) supports ticket search by number,
+  opener name or subject, plus replies, assignments and private attachments.
+- [Reports and activity](docs/REPORTS_AND_ACTIVITY.md) include sales and cash
+  summaries, CSV exports and audit events. Website Controls manages storefront
+  availability and checkout modes.
 
 ## Run the new application
 
@@ -85,7 +74,8 @@ src/app/
   (customer)/            Shared customer layout and public pages
     menu/[id]/           Dish detail routes
   admin/                 Separate workspace layout and overview
-    [module]/            Explicit upcoming-phase pages
+    people/              Account, staff and customer directory
+    support/             Staff support inbox and ticket conversations
     design-system/       Shared component and interaction showcase
     database/            Connection readiness and security setup
   api/health/            Minimal application readiness response
@@ -93,7 +83,7 @@ src/app/
 src/components/
   ui/                    Editable shadcn-style component source
   customer/              Storefront navigation, cards and menu browser
-  admin/                 Workspace navigation, header and previews
+  admin/                 Workspace navigation, header and management controls
   shared/                Brand and empty-state components
 src/features/menu/       Typed sample data, filtering and formatting
 src/lib/                 Configuration, public environment schema and helpers
@@ -119,16 +109,11 @@ loading, empty and disabled states.
 Orange primary buttons use dark text for readable contrast. Workspace dialog
 portals receive the scoped admin theme explicitly.
 
-## Configuration and the next phase
+## Configuration
 
-`.env.local.example` documents the public Supabase URL and publishable-key pair
-for Phase 2. Do not put service-role credentials in any NEXT_PUBLIC variable.
-The public configuration validator selects only explicitly allowed values and
-rejects partial or insecure configuration.
-
-No Supabase project, GitHub repository or Vercel deployment has been created or
-connected yet. Phase 2 will add reviewed migrations and RLS, followed by
-Supabase Authentication, Storage and authorized Realtime in their relevant phases.
+Use `.env.local.example` for the Supabase URL, publishable key, restaurant ID
+and app origin. See the [release runbook](docs/RELEASE.md) for deployment setup
+and [database documentation](docs/DATABASE.md) for migrations.
 
 ## Previous working application — preserved
 
@@ -150,12 +135,11 @@ data still belong to that installation; they do not authenticate the new app.
 The old `dist/` output is separate from the Next.js `.next/` build.
 
 The old catalog is carried into typed sample fixtures without changing original
-prices. No SQLite records have been migrated or deleted. Data migration will be
-explicitly reviewed and tested after the Supabase schema is ready.
+prices. Legacy SQLite records remain separate. Any migration of those records requires a reviewed data import.
 
 ## Version scope
 
 V1 includes connected ordering, customer accounts, custom staff roles and
 permissions, support tickets, reports and the three website modes. V2/V3 are
-listed in the roadmap; they are not being built into Phase 1. Existing legacy
+listed in the roadmap; they are outside the current V1 release. Existing legacy
 reservations remain preserved while the new platform follows the agreed V1 scope.
