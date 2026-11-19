@@ -61,6 +61,7 @@ export const staffAccessSchema = z.object({
   restaurant_id: z.uuid(),
   role_name: z.string(),
   is_owner: z.boolean(),
+  can_manage_all_staff_roles: z.boolean().optional(),
   permissions: z.array(z.string()),
 });
 export type StaffAccess = z.infer<typeof staffAccessSchema>;

@@ -410,3 +410,54 @@ test('owner bootstrap is operator-only, requires confirmation and cannot replace
     /unavailable/,
   );
 });
+
+test('profile email follows Auth and a profile rename updates the staff directory', async () => {
+  const membershipName = () =>
+    scalar('select display_name from public.staff_memberships where restaurant_id=$1 and user_id=$2', [R, SUPPORT]);
+  const email = () => scalar('select email from public.profiles where id=$1', [SUPPORT]);
+
+  assert.equal(await email(), await scalar('select email from auth.users where id=$1', [SUPPORT]));
+  await query("update auth.users set email='renamed@example.com' where id=$1", [SUPPORT]);
+  assert.equal(await email(), 'renamed@example.com');
+
+  await user(SUPPORT, () =>
+    query("update public.profiles set display_name='Updated Support' where id=$1", [SUPPORT]),
+  );
+  assert.equal(await membershipName(), 'Updated Support');
+  await assert.rejects(
+    user(OWNER, () =>
+      query("update public.staff_memberships set display_name='Stale name' where restaurant_id=$1 and user_id=$2", [R, SUPPORT]),
+    ),
+    /Update the display name in profiles/,
+  );
+});
+
+test('CEO has every permission and can manage staff roles', async () => {
+  const executiveRole = await role('ceo-co-owner-super-admin');
+  const member = await scalar(
+    'select id from public.staff_memberships where restaurant_id=$1 and user_id=$2',
+    [R, SUPPORT],
+  );
+  const assign = (actor, roleId) =>
+    user(actor, () => query('select public.set_staff_roles($1,$2,$3,$4,$5)', [
+      R, member, roleId, [], 'active',
+    ]));
+  await assign(OWNER, executiveRole);
+  const access = await user(SUPPORT, () => scalar('select public.current_staff_access($1)', [R]));
+  assert.equal(access.is_owner, false);
+  assert.deepEqual(
+    access.permissions,
+    (await query('select key from public.permissions order by key')).rows.map(({ key }) => key),
+  );
+  assert.equal(access.can_manage_all_staff_roles, true);
+  const invitation = await user(SUPPORT, () =>
+    scalar('select public.create_staff_invitation($1,$2,$3,$4)', [
+      R, 'user7@example.com', executiveRole, HASH,
+    ]),
+  );
+  assert.ok(invitation);
+  await assert.rejects(assign(SUPPORT, executiveRole), /Staff member unavailable/);
+  await query("insert into public.permissions(key,description) values ('test.future','Future permission')");
+  const updated = await user(SUPPORT, () => scalar('select public.current_staff_access($1)', [R]));
+  assert.ok(updated.permissions.includes('test.future'));
+});

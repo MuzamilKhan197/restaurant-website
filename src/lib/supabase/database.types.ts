@@ -743,6 +743,7 @@ export type Database = {
           avatar_path: string | null;
           created_at: string;
           updated_at: string;
+          email: string | null;
         };
         Insert: {
           id: string;
@@ -750,6 +751,7 @@ export type Database = {
           avatar_path?: string | null;
           created_at?: string;
           updated_at?: string;
+          email?: string | null;
         };
         Update: {
           id?: string;
@@ -757,6 +759,7 @@ export type Database = {
           avatar_path?: string | null;
           created_at?: string;
           updated_at?: string;
+          email?: string | null;
         };
         Relationships: [];
       };
@@ -1102,6 +1105,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'roles';
             referencedColumns: ['restaurant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'staff_memberships_user_id_profile_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
           },
         ];
       };

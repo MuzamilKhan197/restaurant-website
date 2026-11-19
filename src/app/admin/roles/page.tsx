@@ -6,6 +6,7 @@ export const metadata = { title: 'Roles & Permissions' };
 
 const roleRank = new Map([
   ['owner', 0],
+  ['ceo-co-owner-super-admin', 0.5],
   ['admin', 1],
   ['manager', 2],
   ['support-agent', 3],
@@ -13,11 +14,18 @@ const roleRank = new Map([
   ['customer', 6],
 ]);
 
+const permissionLabels: Record<string, string> = {
+  'people.read': 'People Access',
+  'roles.read': 'Role Access',
+  'staff.manage': 'Role Assignment',
+  'roles.manage': 'Manage Roles',
+};
+
 export default async function RolesPage() {
   const access = await requireStaff('roles.read');
   const canManage = access.permissions.includes('roles.manage');
   const canGrant = (key: string) =>
-    access.is_owner ||
+    (access.can_manage_all_staff_roles ?? access.is_owner) ||
     (!['roles.manage', 'staff.manage'].includes(key) && access.permissions.includes(key));
   const client = await createClient();
   const [roles, permissions, grants] = await Promise.all([
@@ -88,6 +96,9 @@ export default async function RolesPage() {
                   )}
                   {allowed.map((action) => (
                     <li key={action.key} className="rounded-lg border p-3 text-sm">
+                      {permissionLabels[action.key] && (
+                        <p className="mb-1 font-medium">{permissionLabels[action.key]}</p>
+                      )}
                       <code className="text-xs font-semibold">{action.key}</code>
                       <p className="mt-1 text-muted-foreground">{action.description}</p>
                     </li>
@@ -97,32 +108,6 @@ export default async function RolesPage() {
             </details>
           );
         })}
-      </div>
-      <div className="rounded-xl border bg-card p-5">
-        <h2 className="font-semibold">All available actions</h2>
-        <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-          {permissions.data.map((action) => (
-            <div key={action.key} className="rounded-lg border p-3 text-sm">
-              <dt className="font-semibold">
-                {action.key === 'people.read'
-                  ? 'People Access'
-                  : action.key === 'roles.read'
-                    ? 'Roles Access'
-                    : action.key === 'staff.manage'
-                      ? 'Role Assignment'
-                      : action.key === 'roles.manage'
-                        ? 'Manage Roles'
-                        : action.description}
-              </dt>
-              <dd className="mt-1 text-xs text-muted-foreground">
-                <code>{action.key}</code>
-              </dd>
-              {['people.read', 'roles.read', 'staff.manage', 'roles.manage'].includes(
-                action.key,
-              ) && <dd className="mt-2 text-xs text-muted-foreground">{action.description}</dd>}
-            </div>
-          ))}
-        </dl>
       </div>
     </section>
   );

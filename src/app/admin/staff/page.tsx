@@ -42,7 +42,7 @@ export default async function StaffPage() {
   if ([members, roles, invitations, assignments, grants].some((result) => result.error))
     throw new Error('Unable to load team access. Please retry.');
   const canAssign = (roleId: string) =>
-    access.is_owner ||
+    (access.can_manage_all_staff_roles ?? access.is_owner) ||
     (grants.data || []).every(
       (grant) =>
         grant.role_id !== roleId ||
