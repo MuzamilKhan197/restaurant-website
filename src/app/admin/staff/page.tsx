@@ -4,7 +4,12 @@ import { requireStaff, requireUser } from '@/features/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { InvitationForm, MemberForm, RevokeForm } from '@/components/admin/staff-forms';
+import {
+  InvitationForm,
+  MemberForm,
+  RemoveStaffForm,
+  RevokeForm,
+} from '@/components/admin/staff-forms';
 export const metadata = { title: 'Role Assignment' };
 export const dynamic = 'force-dynamic';
 export default async function StaffPage() {
@@ -138,6 +143,12 @@ export default async function StaffPage() {
                     roles={staffRoles}
                     extraRoles={extraRoles}
                     readOnly={showOwnAccess}
+                  />
+                )}
+                {access.is_owner && canEditMember && (
+                  <RemoveStaffForm
+                    memberId={member.id}
+                    name={member.display_name || 'this team member'}
                   />
                 )}
               </div>

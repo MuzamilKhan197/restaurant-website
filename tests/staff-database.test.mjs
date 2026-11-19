@@ -461,3 +461,26 @@ test('CEO has every permission and can manage staff roles', async () => {
   const updated = await user(SUPPORT, () => scalar('select public.current_staff_access($1)', [R]));
   assert.ok(updated.permissions.includes('test.future'));
 });
+
+test('staff membership removal is owner-only and keeps the Auth account', async () => {
+  const executiveRole = await role('ceo-co-owner-super-admin');
+  const member = await scalar(
+    'select id from public.staff_memberships where restaurant_id=$1 and user_id=$2',
+    [R, SUPPORT],
+  );
+  await user(OWNER, () =>
+    query('select public.set_staff_roles($1,$2,$3,$4,$5)', [R, member, executiveRole, [], 'suspended']),
+  );
+  const remove = (actor, target) => user(actor, () =>
+    query('delete from public.staff_memberships where restaurant_id=$1 and user_id=$2 returning id', [R, target]),
+  );
+  assert.equal((await remove(OWNER2, SUPPORT)).rows.length, 0);
+  await user(OWNER, () =>
+    query('select public.set_staff_roles($1,$2,$3,$4,$5)', [R, member, executiveRole, [], 'active']),
+  );
+  assert.equal((await remove(SUPPORT, SUPPORT)).rows.length, 0);
+  await service(() => query('select public.bootstrap_restaurant_owner($1,$2)', [R, OWNER]));
+  await assert.rejects(remove(OWNER, OWNER), /Owner membership cannot be removed/);
+  assert.equal((await remove(OWNER, SUPPORT)).rows.length, 1);
+  assert.equal(await scalar('select exists(select 1 from auth.users where id=$1)', [SUPPORT]), true);
+});

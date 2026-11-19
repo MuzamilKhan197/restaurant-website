@@ -67,6 +67,30 @@ export async function updateMember(_state: AuthState, form: FormData): Promise<A
   revalidatePath('/admin', 'layout');
   return { success: 'Team access updated.' };
 }
+export async function removeStaffMember(_state: AuthState, form: FormData): Promise<AuthState> {
+  const access = await requireStaff('staff.manage');
+  if (!access.is_owner) return { error: 'Only the owner can remove staff members.' };
+  const user = await requireUser('/admin/staff');
+  const member = z.uuid().safeParse(form.get('member'));
+  if (!member.success) return { error: 'Invalid team member.' };
+  const client = await createClient();
+  const { data, error } = await client
+    .from('staff_memberships')
+    .delete()
+    .eq('restaurant_id', access.restaurant_id)
+    .eq('id', member.data)
+    .neq('user_id', user.id)
+    .select('id')
+    .maybeSingle();
+  if (error?.code === '23503')
+    return {
+      error: 'Reassign or unassign this staff member's support tickets before removing them.',
+    };
+  if (error || !data) return { error: 'This staff membership could not be removed.' };
+  revalidatePath('/admin', 'layout');
+  return { success: 'Staff access removed.' };
+}
+
 export async function saveRole(_state: AuthState, form: FormData): Promise<AuthState> {
   const access = await requireStaff('roles.manage');
   const parsed = roleSchema.safeParse({

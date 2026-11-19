@@ -7,6 +7,7 @@ import {
   createInvitation,
   revokeInvitation,
   updateMember,
+  removeStaffMember,
   saveRole,
   deleteRole,
 } from '@/features/auth/staff-actions';
@@ -153,6 +154,30 @@ export function MemberForm({
           Your current access is shown here. Another authorized manager can change it.
         </p>
       )}
+      <Feedback state={state} />
+    </form>
+  );
+}
+export function RemoveStaffForm({ memberId, name }: { memberId: string; name: string }) {
+  const [state, action, pending] = useActionState(removeStaffMember, {});
+  return (
+    <form
+      action={action}
+      className="mt-3"
+      onSubmit={(event) => {
+        if (
+          !window.confirm(
+            `Remove ${name} from the restaurant staff? This removes their staff access.`,
+          )
+        ) {
+          event.preventDefault();
+        }
+      }}
+    >
+      <input type="hidden" name="member" value={memberId} />
+      <Button size="sm" variant="destructive" disabled={pending}>
+        {pending ? 'Removing.' : 'Remove staff'}
+      </Button>
       <Feedback state={state} />
     </form>
   );
