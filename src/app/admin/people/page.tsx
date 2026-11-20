@@ -101,9 +101,7 @@ export default async function PeoplePage({
         {tab === 'all' ? 'profiles' : tab === 'staff' ? 'staff members' : 'registered customers'}
       </p>
       <div className="divide-y rounded-xl border bg-card">
-        {!people.length && (
-          <p className="p-6 text-sm text-muted-foreground">No people found.</p>
-        )}
+        {!people.length && <p className="p-6 text-sm text-muted-foreground">No people found.</p>}
         {people.map((person) => (
           <div key={person.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
             <div className="min-w-0">

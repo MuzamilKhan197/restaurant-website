@@ -48,7 +48,7 @@ Validate all inputs with Zod. Audit writes. Preserve historical order snapshots.
 Implemented: published catalogue, size/extra price previews, owner publication,
 verified profiles, atomic saved addresses, snapshot order history and staff
 customer management. See [CUSTOMER_EXPERIENCE.md](CUSTOMER_EXPERIENCE.md) and
-[PHASE_5_VERIFICATION.md](PHASE_5_VERIFICATION.md) for checks and manual acceptance.
+[PHASE_5_VERIFICATION.md](verification/PHASE_5_VERIFICATION.md) for checks and manual acceptance.
 
 Connect storefront reads to Supabase. Add account/profile pages, saved addresses
 and registered order history. Keep guest checkout available. Product details
@@ -60,7 +60,7 @@ Implemented: persistent cart, guest/account cash checkout, authoritative quotes,
 atomic immutable orders, idempotent retries, private capability tracking,
 staff status/cash workflows and minimal Realtime updates with polling fallback.
 See [CHECKOUT_AND_ORDERS.md](CHECKOUT_AND_ORDERS.md) and
-[PHASE_6_VERIFICATION.md](PHASE_6_VERIFICATION.md).
+[PHASE_6_VERIFICATION.md](verification/PHASE_6_VERIFICATION.md).
 
 Delivery/pickup, COD/pay-at-pickup, trusted server pricing, immutable line-item
 snapshots, duplicate-request protection and inventory/availability checks relevant
@@ -73,7 +73,7 @@ tracking, authorized Realtime updates and staff order tools.
 Implemented: guest/account private tickets, order ownership, idempotent requests
 and replies, internal notes, assignments, priorities, escalation/resolution/
 reopen and private attachments. See [SUPPORT_SYSTEM.md](SUPPORT_SYSTEM.md) and
-[PHASE_7_VERIFICATION.md](PHASE_7_VERIFICATION.md) for remaining transport checks.
+[PHASE_7_VERIFICATION.md](verification/PHASE_7_VERIFICATION.md) for remaining transport checks.
 
 Guest/customer tickets with unique numbers, category, priority, status, thread
 messages and optional private attachments. Staff replies, assignment, escalation
@@ -85,7 +85,7 @@ Implemented: permission-aware operational dashboard, aggregate sales/cash
 reports, timezone-aware dates/charts, exact CSV downloads, popular dishes,
 filtered activity log and paginated customer order history. See
 [REPORTS_AND_ACTIVITY.md](REPORTS_AND_ACTIVITY.md) and
-[PHASE_8_VERIFICATION.md](PHASE_8_VERIFICATION.md) for checks and remaining browser
+[PHASE_8_VERIFICATION.md](verification/PHASE_8_VERIFICATION.md) for checks and remaining browser
 acceptance.
 
 Actual order/sales statistics, basic charts, recent orders, popular products,

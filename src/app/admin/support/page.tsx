@@ -14,7 +14,10 @@ export default async function SupportInbox({
     params = await searchParams,
     page = Math.max(
       1,
-      Math.min(10000, Number.parseInt(typeof params.page === 'string' ? params.page : '1', 10) || 1),
+      Math.min(
+        10000,
+        Number.parseInt(typeof params.page === 'string' ? params.page : '1', 10) || 1,
+      ),
     ),
     query = typeof params.q === 'string' ? params.q.trim().slice(0, 100) : '';
   const status = z.enum(statuses).safeParse(params.status),
@@ -41,7 +44,7 @@ export default async function SupportInbox({
   if (assigned.success) request = request.eq('assigned_to', assigned.data);
   else if (params.assigned === 'unassigned') request = request.is('assigned_to', null);
   if (query) {
-    // Quote PostgREST values so punctuation stays inside the search term.
+    // Quote the entire PostgREST value so commas, quotes and parentheses stay in the search term.
     const pattern = JSON.stringify('%' + query.replace(/[\\%_]/g, (char) => '\\' + char) + '%');
     request = request.or(
       ['reference', 'contact_name', 'subject']

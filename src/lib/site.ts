@@ -71,7 +71,8 @@ export const developmentPhases = [
   {
     number: 10,
     title: 'Release verification',
-    summary: 'Production deployment is live. Final browser acceptance and hosted recovery checks are pending.',
+    summary:
+      'Production deployment is live. Final browser acceptance and hosted recovery checks are pending.',
     status: 'current',
   },
 ] as const;

@@ -2,7 +2,7 @@
 
 **Current update:** Phase 3 connected the user-created restaurant project and
 applied seven migrations. See [AUTHENTICATION.md](AUTHENTICATION.md) and
-[PHASE_3_VERIFICATION.md](PHASE_3_VERIFICATION.md) for current setup and evidence.
+[PHASE_3_VERIFICATION.md](verification/PHASE_3_VERIFICATION.md) for current setup and evidence.
 
 The Next.js app now has a versioned Supabase PostgreSQL schema, table grants,
 Row Level Security, private Storage policies and typed client factories.
@@ -129,7 +129,7 @@ checks; a signed URL remains usable until expiry.
    apply the test bootstrap or test fixtures. `supabase/seed.sql` is optional
    development data only; it creates an unpublished ownerless sample with paused
    ordering, no people, orders or fake Storage objects. Do not seed client production.
-3. Copy `.env.local.example` to `.env.local` and set the public HTTPS URL and
+3. Copy `.env.example` to `.env.local` and set the public HTTPS URL and
    `sb_publishable_` key. Restart Next.js. A server secret is optional and unused
    by readiness checks. Never expose it with `NEXT_PUBLIC_`.
 4. Visit `/admin/database` and `/api/health`. The expected schema version is 2.

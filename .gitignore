@@ -12,7 +12,6 @@ artifacts/
 out/
 coverage/
 *.tsbuildinfo
-!.env.local.example
 supabase/.temp/
 supabase/.branches/
 .supabase/

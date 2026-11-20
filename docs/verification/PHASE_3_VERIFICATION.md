@@ -78,7 +78,7 @@ only signed-in integration/release checks remain outstanding.
 
 The connector cannot change Supabase Auth URL settings. The browser dashboard
 required sign-in, so Site URL/callback configuration remains pending. Follow
-[AUTHENTICATION.md](AUTHENTICATION.md), then register and verify the actual owner.
+[AUTHENTICATION.md](../AUTHENTICATION.md), then register and verify the actual owner.
 The operator must confirm the intended email/UUID before assigning ownership.
 Signed-in account/staff browser flows, actual email delivery/recovery, Storage
 HTTP transfer and Realtime subscriptions are not claimed as end-to-end verified.

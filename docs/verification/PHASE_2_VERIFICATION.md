@@ -44,7 +44,7 @@ advisors, hosted generated types and service integration therefore remain
 unverified on hosted Supabase. The installed connector currently exposes no
 project-management tools in this session. The local CLI was also blocked by
 its user-level configuration-directory permissions; full Supabase/Docker tests
-were not run. See [DATABASE.md](DATABASE.md) for the connection checklist.
+were not run. See [DATABASE.md](../DATABASE.md) for the connection checklist.
 
 The workspace remains a public setup preview without private operational data.
 Login, verified sessions, route authorization and staff management belong to

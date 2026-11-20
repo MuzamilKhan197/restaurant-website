@@ -93,7 +93,9 @@ export default async function CustomerPage({
           </p>
           <nav aria-label="Customer order pages" className="flex gap-6 text-sm">
             {page > 1 && <Link href={historyHref(page - 1, ticketPage)}>Previous</Link>}
-            {page * 20 < (orders?.count || 0) && <Link href={historyHref(page + 1, ticketPage)}>Next</Link>}
+            {page * 20 < (orders?.count || 0) && (
+              <Link href={historyHref(page + 1, ticketPage)}>Next</Link>
+            )}
           </nav>
         </div>
       ) : (
@@ -103,7 +105,9 @@ export default async function CustomerPage({
       )}
       {tickets && (
         <section aria-labelledby="ticket-history" className="mt-8">
-          <h2 id="ticket-history" className="font-semibold">Ticket history</h2>
+          <h2 id="ticket-history" className="font-semibold">
+            Ticket history
+          </h2>
           <div className="mt-4 space-y-3">
             {tickets.data.length ? (
               tickets.data.map((ticket) => (
@@ -115,7 +119,9 @@ export default async function CustomerPage({
                     <Link href={'/admin/support/' + ticket.id} className="break-words underline">
                       {ticket.subject}
                     </Link>
-                    <p className="mt-1 break-all text-xs text-muted-foreground">{ticket.reference}</p>
+                    <p className="mt-1 break-all text-xs text-muted-foreground">
+                      {ticket.reference}
+                    </p>
                   </div>
                   <span className="capitalize">{ticket.status.replaceAll('_', ' ')}</span>
                 </div>

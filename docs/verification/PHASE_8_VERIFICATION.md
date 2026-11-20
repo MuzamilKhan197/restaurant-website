@@ -3,7 +3,7 @@
 Implemented live operational overview, aggregate sales/cash reports, date
 filters, interactive charts, exact CSV exports, popular products, activity log
 and complete paginated customer order history. Also corrected refund controls.
-See [REPORTS_AND_ACTIVITY.md](REPORTS_AND_ACTIVITY.md).
+See [REPORTS_AND_ACTIVITY.md](../REPORTS_AND_ACTIVITY.md).
 
 | Check | Result |
 | --- | --- |

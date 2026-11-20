@@ -47,7 +47,7 @@ Both customer and workspace pages use this single Next.js process.
 To replace an older restaurant preview on port 3003, run `npm run preview:restart`
 from a normal Windows project terminal. It verifies the listener belongs to this
 project before stopping it. The managed runner cannot access the existing host
-listener; see [PHASE_4_VERIFICATION.md](docs/PHASE_4_VERIFICATION.md) for the build
+listener; see [PHASE_4_VERIFICATION.md](docs/verification/PHASE_4_VERIFICATION.md) for the build
 workaround, test evidence and remaining owner-session acceptance checks.
 
 ## Verification and production build
@@ -90,7 +90,8 @@ src/lib/                 Configuration, public environment schema and helpers
 supabase/                SQL migrations, private bucket policies and development seed
 tests/                   Foundation, PostgreSQL policy and seed checks
 public/assets/           Local photographs, fonts and license notices
-docs/ROADMAP.md          Approved implementation sequence and boundaries
+docs/ROADMAP.md          Implementation sequence and boundaries
+docs/verification/      Phase verification notes and supporting evidence
 ```
 
 The primitives follow shadcn/ui's editable-source convention, using Tailwind,
@@ -111,8 +112,8 @@ portals receive the scoped admin theme explicitly.
 
 ## Configuration
 
-Use `.env.local.example` for the Supabase URL, publishable key, restaurant ID
-and app origin. See the [release runbook](docs/RELEASE.md) for deployment setup
+Copy `.env.example` to `.env.local` for the Next.js configuration. The legacy server
+creates its own `.env` with a generated administrator password. See the [release runbook](docs/RELEASE.md) for deployment setup
 and [database documentation](docs/DATABASE.md) for migrations.
 
 ## Previous working application — preserved

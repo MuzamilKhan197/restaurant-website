@@ -2,7 +2,7 @@
 
 Implemented cart, guest/account cash checkout, authoritative quote and atomic
 order creation, secure guest tracking, staff order/cash workflow and minimal
-Realtime updates. See [CHECKOUT_AND_ORDERS.md](CHECKOUT_AND_ORDERS.md).
+Realtime updates. See [CHECKOUT_AND_ORDERS.md](../CHECKOUT_AND_ORDERS.md).
 
 | Check | Result |
 | --- | --- |

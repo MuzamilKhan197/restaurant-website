@@ -2,7 +2,7 @@
 
 Implemented connected catalogue, dish options/price preview, owner publication,
 customer profiles, saved addresses, order history and staff customer management.
-See [CUSTOMER_EXPERIENCE.md](CUSTOMER_EXPERIENCE.md).
+See [CUSTOMER_EXPERIENCE.md](../CUSTOMER_EXPERIENCE.md).
 
 | Check | Result |
 | --- | --- |

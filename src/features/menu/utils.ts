@@ -1,13 +1,5 @@
-import type { Dish, MenuCategory } from './types';
+import type { Dish } from './types';
 
-export const menuCategories: readonly ('All dishes' | MenuCategory)[] = [
-  'All dishes',
-  'Starters',
-  'Mains',
-  'From the grill',
-  'Desserts',
-  'Drinks',
-];
 export function filterDishes(
   dishes: readonly Dish[],
   {

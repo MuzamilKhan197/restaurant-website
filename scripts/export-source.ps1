@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $exportPath = Join-Path $projectRoot 'artifacts/restaurant-v1-release-candidate.zip'
 if (Test-Path -LiteralPath $exportPath) { throw 'Source export already exists; choose a new output name.' }
-$selected = @('src','public','docs','tests','test','scripts','lib','server','assets','supabase/migrations','supabase/functions','supabase/config.toml','supabase/seed.sql','package.json','package-lock.json','next.config.ts','next-env.d.ts','tsconfig.json','postcss.config.mjs','eslint.config.mjs','README.md','.env.local.example','.prettierrc.json')
+$selected = @('src','public','docs','tests','test','scripts','lib','server','assets','supabase/migrations','supabase/functions','supabase/config.toml','supabase/seed.sql','package.json','package-lock.json','next.config.ts','next-env.d.ts','tsconfig.json','postcss.config.mjs','eslint.config.mjs','README.md','.env.example','.prettierrc.json')
 $selected += Get-ChildItem -LiteralPath $projectRoot -File | Where-Object { $_.Extension -in @('.html','.js','.css') } | Select-Object -ExpandProperty Name
 $selected += @('.gitignore','.github/workflows/verify.yml')
 New-Item -ItemType Directory -Path (Join-Path $projectRoot 'artifacts') -Force | Out-Null

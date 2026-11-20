@@ -2,7 +2,7 @@
 
 Implemented guest/account tickets, private conversations, staff replies/internal
 notes, assignments, priorities, escalation/resolution/reopen controls and private
-author-owned attachments. See [SUPPORT_SYSTEM.md](SUPPORT_SYSTEM.md).
+author-owned attachments. See [SUPPORT_SYSTEM.md](../SUPPORT_SYSTEM.md).
 
 | Check | Result |
 | --- | --- |
