@@ -5,7 +5,7 @@ sequence are recorded in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## V1 status
 
-The [production site](https://restaurant-website-two-indol.vercel.app) is deployed
+The [production site](https://restaurant-website-02.vercel.app) is deployed
 on Vercel from GitHub `main` and connected to Supabase. V1 features are implemented.
 Final signed-in browser acceptance, responsive accessibility checks and hosted
 recovery verification are tracked in the [release runbook](docs/RELEASE.md).

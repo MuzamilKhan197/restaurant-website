@@ -1,6 +1,6 @@
 # Version 1 deployment and acceptance
 
-[Production](https://restaurant-website-two-indol.vercel.app) runs on Vercel
+[Production](https://restaurant-website-02.vercel.app) runs on Vercel
 from the [GitHub repository](https://github.com/MuzamilKhan197/restaurant-website)
 `main` branch. The GitHub verification workflow checks lint, types, tests, a
 local fixture restore and a production build.
@@ -22,7 +22,7 @@ URLs. Use the verified sender configuration for live email acceptance.
 
 ## Outstanding acceptance checks
 
-- Run npm run test:auth:http -- https://restaurant-website-two-indol.vercel.app and confirm
+- Run npm run test:auth:http -- https://restaurant-website-02.vercel.app and confirm
   protected pages redirect to login and /api/health reports schema version 9.
 - In staging verify registration, confirmation, sign-in, recovery and staff
   invitation acceptance using controlled accounts.
